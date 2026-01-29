@@ -19,5 +19,5 @@ type Game struct {
 	Created_at         time.Time     `bson:"created_at" json:"created_at"`
 	Updated_at         time.Time     `bson:"updated_at" json:"updated_at"`
 	Category           bson.ObjectID `bson:"category" json:"category"`
-	IsVerified         bool          `bson:"isVerified" json:"isVerified"`
+	IsVerified         bool          `bson:"is_verified" json:"is_verified"`
 }
