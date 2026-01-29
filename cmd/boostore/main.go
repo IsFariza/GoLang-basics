@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log"
 
 	"github.com/BlackHole55/software-store-final/config"
@@ -14,5 +16,11 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	config.ConnectDB()
+	client := config.ConnectDB()
+
+	defer func() {
+		if err := client.Disconnect(context.Background()); err != nil {
+			fmt.Printf("Error closing DB: %v\n", err)
+		}
+	}()
 }
