@@ -11,8 +11,6 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo/readpref"
 )
 
-var DB *mongo.Client
-
 func ConnectDB() *mongo.Client {
 	mongoURI := os.Getenv("MONGODB_URI")
 
@@ -33,6 +31,5 @@ func ConnectDB() *mongo.Client {
 
 	fmt.Println("Pinged your deployment. You successfully connected to MongoDB!")
 
-	DB = client
 	return client
 }
