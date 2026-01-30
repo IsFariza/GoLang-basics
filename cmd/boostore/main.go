@@ -28,17 +28,20 @@ func main() {
 	defer stop()
 
 	gameRepo := mongodb.NewGameRepository(client)
+	companyRepo := mongodb.NewCompanyRepository(client)
 
 	gameUC := usecase.NewGameUseCase(gameRepo)
+	companyUC := usecase.NewCompanyUsecase(companyRepo)
 
 	gameHandler := delivery.NewGameHandler(gameUC)
+	companyHandler := delivery.NewCompanyHandler(companyUC)
 
 	router := gin.Default()
 
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 
-	delivery.RegisterRoutes(router, gameHandler)
+	delivery.RegisterRoutes(router, gameHandler, companyHandler)
 
 	port := "8080"
 	log.Printf("Server starting on port %s", port)
