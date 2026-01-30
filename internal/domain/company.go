@@ -1,6 +1,10 @@
 package domain
 
-import "go.mongodb.org/mongo-driver/v2/bson"
+import (
+	"time"
+
+	"go.mongodb.org/mongo-driver/v2/bson"
+)
 
 type Company struct {
 	ID          bson.ObjectID `bson:"_id,omitempty" json:"_id"`
@@ -8,6 +12,8 @@ type Company struct {
 	Description string        `bson:"description" json:"description"`
 	Country     string        `bson:"country" json:"country"`
 	Contacts    Contacts      `bson:"contacts" json:"contacts"`
+	CreatedAt   time.Time     `bson:"created_at" json:"created_at"`
+	UpdatedAt   time.Time     `bson:"updated_at" json:"updated_at"`
 }
 
 type Contacts struct {
