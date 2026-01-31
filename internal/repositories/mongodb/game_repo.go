@@ -52,22 +52,14 @@ func (r *GameRepository) GetById(ctx context.Context, id string) (domain.Game, e
 	return game, err
 }
 
-// TODO: make update
-func (r *GameRepository) Update(ctx context.Context, id string, updates domain.Game) error {
+func (r *GameRepository) Update(ctx context.Context, id string, updatedGame domain.Game) error {
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return err
 	}
 
 	filter := bson.M{"_id": objID}
-	update := bson.M{"$set": bson.M{
-		"title":        updates.Title,
-		"description":  updates.Description,
-		"release_date": updates.ReleaseDate,
-		"price":        updates.Price,
-		"updated_at":   updates.UpdatedAt,
-		"is_verified":  false,
-	}}
+	update := bson.M{"$set": updatedGame}
 
 	res, err := r.collection.UpdateOne(ctx, filter, update)
 	if res.MatchedCount == 0 {
