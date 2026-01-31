@@ -14,10 +14,10 @@ type Game struct {
 	OriginalSystem string        `bson:"original_system" json:"original_system"`
 	Title          string        `bson:"title" json:"title" binding:"required"`
 	Description    string        `bson:"description" json:"description"`
-	ReleaseDate    time.Time     `bson:"release_date" json:"release_date"`
-	Price          float32       `bson:"price" json:"price"`
+	ReleaseDate    *time.Time    `bson:"release_date" json:"release_date"`
+	Price          *float32      `bson:"price" json:"price"`
 	IsVerified     bool          `bson:"is_verified" json:"is_verified"`
 	Category       []string      `bson:"category" json:"category"`
 	CreatedAt      time.Time     `bson:"created_at" json:"created_at"`
-	UpdatedAt      time.Time     `bson:"updated_at" json:"updated_at"`
+	UpdatedAt      *time.Time    `bson:"updated_at" json:"updated_at"`
 }

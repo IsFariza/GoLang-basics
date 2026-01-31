@@ -73,15 +73,16 @@ func (uc *GameUseCase) Update(ctx context.Context, id string, updatedGame *domai
 		existingGame.Description = updatedGame.Description
 	}
 
-	if !updatedGame.ReleaseDate.IsZero() {
+	if updatedGame.ReleaseDate != nil {
 		existingGame.ReleaseDate = updatedGame.ReleaseDate
 	}
 
-	if updatedGame.Price != 0 {
+	if updatedGame.Price != nil {
 		existingGame.Price = updatedGame.Price
 	}
 
-	existingGame.UpdatedAt = time.Now()
+	now := time.Now()
+	existingGame.UpdatedAt = &now
 	existingGame.IsVerified = false
 
 	return uc.repo.Update(ctx, id, existingGame)
