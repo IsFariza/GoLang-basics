@@ -2,7 +2,6 @@ package mongodb
 
 import (
 	"context"
-	"errors"
 
 	"github.com/BlackHole55/software-store-final/internal/domain"
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -45,7 +44,7 @@ func (r *CompanyRepository) GetById(ctx context.Context, id string) (domain.Comp
 
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {
-		return domain.Company{}, err
+		return company, err
 	}
 
 	filter := bson.M{"_id": objID}
@@ -56,25 +55,20 @@ func (r *CompanyRepository) GetById(ctx context.Context, id string) (domain.Comp
 
 }
 
-func (r *CompanyRepository) Update(ctx context.Context, id string, updates domain.Company) error {
+func (r *CompanyRepository) Update(ctx context.Context, id string, updatedCompany domain.Company) error {
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return err
 	}
 
 	filter := bson.M{"_id": objID}
-	update := bson.M{
-		"$set": bson.M{
-			"name":        updates.Name,
-			"description": updates.Description,
-			"country":     updates.Country,
-			"contacts":    updates.Contacts,
-			"created_at":  updates.CreatedAt,
-			"updated_at":  updates.UpdatedAt,
-		},
+	update := bson.M{"$set": updatedCompany}
+
+	res, err := r.collection.UpdateOne(ctx, filter, update)
+	if res.MatchedCount == 0 {
+		return domain.ErrorNotFound
 	}
 
-	_, err = r.collection.UpdateOne(ctx, filter, update)
 	return err
 }
 
@@ -87,10 +81,8 @@ func (r *CompanyRepository) Delete(ctx context.Context, id string) error {
 	filter := bson.M{"_id": objID}
 
 	res, err := r.collection.DeleteOne(ctx, filter)
-
-	//todo fix
 	if res.DeletedCount == 0 {
-		return errors.New("company not found")
+		return domain.ErrorNotFound
 	}
 
 	return err
