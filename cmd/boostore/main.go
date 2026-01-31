@@ -29,19 +29,22 @@ func main() {
 
 	gameRepo := mongodb.NewGameRepository(client)
 	companyRepo := mongodb.NewCompanyRepository(client)
+	emulationRepo := mongodb.NewEmulationRepository(client)
 
 	gameUC := usecase.NewGameUseCase(gameRepo, companyRepo)
 	companyUC := usecase.NewCompanyUsecase(companyRepo)
+	emulationUC := usecase.NewEmulationUsecase(emulationRepo)
 
 	gameHandler := delivery.NewGameHandler(gameUC)
 	companyHandler := delivery.NewCompanyHandler(companyUC)
+	emulationHandler := delivery.NewEmulationHandler(emulationUC)
 
 	router := gin.Default()
 
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 
-	delivery.RegisterRoutes(router, gameHandler, companyHandler)
+	delivery.RegisterRoutes(router, gameHandler, companyHandler, emulationHandler)
 
 	port := "8080"
 	log.Printf("Server starting on port %s", port)
