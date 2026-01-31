@@ -27,3 +27,12 @@ type EmulationRepo interface {
 	Update(ctx context.Context, id string, updates *Emulation) error
 	Delete(ctx context.Context, id string) error
 }
+
+type ReviewRepo interface {
+	Create(ctx context.Context, review Review) error
+	GetAll(ctx context.Context) ([]Review, error)
+	GetById(ctx context.Context, id string) (Review, error)
+	GetByGameId(ctx context.Context, gameId string) ([]Review, error)
+	Update(ctx context.Context, id string, updates Review) error
+	Delete(ctx context.Context, id string) error
+}
