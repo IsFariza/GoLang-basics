@@ -8,12 +8,12 @@ import (
 
 type Company struct {
 	ID          bson.ObjectID `bson:"_id,omitempty" json:"_id"`
-	Name        string        `bson:"name" json:"name"`
+	Name        string        `bson:"name" json:"name" binding:"required"`
 	Description string        `bson:"description" json:"description"`
 	Country     string        `bson:"country" json:"country"`
 	Contacts    Contacts      `bson:"contacts" json:"contacts"`
 	CreatedAt   time.Time     `bson:"created_at" json:"created_at"`
-	UpdatedAt   time.Time     `bson:"updated_at" json:"updated_at"`
+	UpdatedAt   *time.Time    `bson:"updated_at" json:"updated_at"`
 }
 
 type Contacts struct {

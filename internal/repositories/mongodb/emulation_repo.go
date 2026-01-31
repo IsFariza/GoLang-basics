@@ -8,24 +8,24 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
-type GameRepository struct {
+type EmulationRepository struct {
 	collection *mongo.Collection
 }
 
-func NewGameRepository(client *mongo.Client) *GameRepository {
-	return &GameRepository{
-		collection: client.Database("softwarestore").Collection("games"),
+func NewEmulationRepository(client *mongo.Client) *EmulationRepository {
+	return &EmulationRepository{
+		collection: client.Database("softwarestore").Collection("emulations"),
 	}
 }
 
-func (r *GameRepository) Create(ctx context.Context, game *domain.Game) error {
-	_, err := r.collection.InsertOne(ctx, game)
+func (r *EmulationRepository) Create(ctx context.Context, emulation *domain.Emulation) error {
+	_, err := r.collection.InsertOne(ctx, emulation)
 
 	return err
 }
 
-func (r *GameRepository) GetAll(ctx context.Context) ([]*domain.Game, error) {
-	var games []*domain.Game
+func (r *EmulationRepository) GetAll(ctx context.Context) ([]*domain.Emulation, error) {
+	var emulations []*domain.Emulation
 
 	cursor, err := r.collection.Find(ctx, bson.D{})
 	if err != nil {
@@ -33,12 +33,12 @@ func (r *GameRepository) GetAll(ctx context.Context) ([]*domain.Game, error) {
 	}
 	defer cursor.Close(ctx)
 
-	err = cursor.All(ctx, &games)
-	return games, err
+	err = cursor.All(ctx, &emulations)
+	return emulations, err
 }
 
-func (r *GameRepository) GetById(ctx context.Context, id string) (*domain.Game, error) {
-	var game domain.Game
+func (r *EmulationRepository) GetById(ctx context.Context, id string) (*domain.Emulation, error) {
+	var emulation domain.Emulation
 
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {
@@ -47,23 +47,23 @@ func (r *GameRepository) GetById(ctx context.Context, id string) (*domain.Game, 
 
 	filter := bson.M{"_id": objID}
 
-	err = r.collection.FindOne(ctx, filter).Decode(&game)
+	err = r.collection.FindOne(ctx, filter).Decode(&emulation)
 
 	if err != nil {
 		return nil, domain.ErrorNotFound
 	}
 
-	return &game, err
+	return &emulation, err
 }
 
-func (r *GameRepository) Update(ctx context.Context, id string, updatedGame *domain.Game) error {
+func (r *EmulationRepository) Update(ctx context.Context, id string, updatedEmulation *domain.Emulation) error {
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return err
 	}
 
 	filter := bson.M{"_id": objID}
-	update := bson.M{"$set": updatedGame}
+	update := bson.M{"$set": updatedEmulation}
 
 	res, err := r.collection.UpdateOne(ctx, filter, update)
 	if res.MatchedCount == 0 {
@@ -73,7 +73,7 @@ func (r *GameRepository) Update(ctx context.Context, id string, updatedGame *dom
 	return err
 }
 
-func (r *GameRepository) Delete(ctx context.Context, id string) error {
+func (r *EmulationRepository) Delete(ctx context.Context, id string) error {
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return err
