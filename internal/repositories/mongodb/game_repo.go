@@ -70,7 +70,10 @@ func (r *GameRepository) Update(ctx context.Context, id string, updates domain.G
 	}}
 
 	// TODO: handle not found
-	_, err = r.collection.UpdateOne(ctx, filter, update)
+	res, err := r.collection.UpdateOne(ctx, filter, update)
+	if res.MatchedCount == 0 {
+		return domain.ErrorNotFound
+	}
 
 	return err
 }
