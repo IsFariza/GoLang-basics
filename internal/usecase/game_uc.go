@@ -8,14 +8,16 @@ import (
 )
 
 type GameUseCase struct {
-	repo        domain.GameRepo
-	companyRepo domain.CompanyRepo
+	repo          domain.GameRepo
+	companyRepo   domain.CompanyRepo
+	emulationRepo domain.EmulationRepo
 }
 
-func NewGameUseCase(repo domain.GameRepo, companyRepo domain.CompanyRepo) *GameUseCase {
+func NewGameUseCase(repo domain.GameRepo, companyRepo domain.CompanyRepo, emulationRepo domain.EmulationRepo) *GameUseCase {
 	return &GameUseCase{
-		repo:        repo,
-		companyRepo: companyRepo,
+		repo:          repo,
+		companyRepo:   companyRepo,
+		emulationRepo: emulationRepo,
 	}
 }
 
@@ -26,6 +28,12 @@ func (uc *GameUseCase) Create(ctx context.Context, game *domain.Game) error {
 
 	if _, err := uc.companyRepo.GetById(ctx, game.DeveloperId.Hex()); err != nil {
 		return domain.ErrorInvalidDeveloper
+	}
+
+	if !game.EmulationId.IsZero() {
+		if _, err := uc.emulationRepo.GetById(ctx, game.EmulationId.Hex()); err != nil {
+			return domain.ErrorInvalidEmulator
+		}
 	}
 
 	game.CreatedAt = time.Now()
