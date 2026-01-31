@@ -94,6 +94,7 @@ func (h *GameHandler) Delete(c *gin.Context) {
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		}
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Game deleted"})
