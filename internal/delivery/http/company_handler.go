@@ -68,7 +68,11 @@ func (h *CompanyHandler) Update(c *gin.Context) {
 
 	err := h.usecase.Update(ctx, id, updates)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if errors.Is(err, domain.ErrorNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Company not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
 		return
 	}
 
