@@ -1,6 +1,7 @@
 package http
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/BlackHole55/software-store-final/internal/domain"
@@ -70,8 +71,13 @@ func (h *GameHandler) Update(c *gin.Context) {
 
 	err := h.usecase.Update(c.Request.Context(), id, game)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if errors.Is(err, domain.ErrorNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Game not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
 		return
+
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Game updated successfully"})
