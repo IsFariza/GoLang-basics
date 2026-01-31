@@ -5,29 +5,28 @@ import (
 	"net/http"
 
 	"github.com/BlackHole55/software-store-final/internal/domain"
-	"github.com/BlackHole55/software-store-final/internal/usecase"
 	"github.com/gin-gonic/gin"
 )
 
 type GameHandler struct {
-	usecase *usecase.GameUseCase
+	usecase domain.GameUC
 }
 
-func NewGameHandler(usecase *usecase.GameUseCase) *GameHandler {
+func NewGameHandler(usecase domain.GameUC) *GameHandler {
 	return &GameHandler{
 		usecase: usecase,
 	}
 }
 
 // POST api/v1/games
-func (h *GameHandler) CreateGame(c *gin.Context) {
+func (h *GameHandler) Create(c *gin.Context) {
 	var game domain.Game
 	if err := c.ShouldBindJSON(&game); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	err := h.usecase.CreateGame(c.Request.Context(), game)
+	err := h.usecase.Create(c.Request.Context(), &game)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -50,13 +49,13 @@ func (h *GameHandler) GetAll(c *gin.Context) {
 // GET api/v1/games/:id
 func (h *GameHandler) GetById(c *gin.Context) {
 	id := c.Param("id")
-	task, err := h.usecase.GetById(c.Request.Context(), id)
+	game, err := h.usecase.GetById(c.Request.Context(), id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, task)
+	c.JSON(http.StatusOK, game)
 }
 
 // PUT api/v1/games/:id
@@ -69,7 +68,7 @@ func (h *GameHandler) Update(c *gin.Context) {
 		return
 	}
 
-	err := h.usecase.Update(c.Request.Context(), id, game)
+	err := h.usecase.Update(c.Request.Context(), id, &game)
 	if err != nil {
 		if errors.Is(err, domain.ErrorNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Game not found"})
