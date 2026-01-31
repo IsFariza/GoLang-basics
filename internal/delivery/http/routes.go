@@ -2,7 +2,7 @@ package http
 
 import "github.com/gin-gonic/gin"
 
-func RegisterRoutes(r *gin.Engine, gameH *GameHandler, companyH *CompanyHandler, emulationH *EmulationHandler) {
+func RegisterRoutes(r *gin.Engine, gameH *GameHandler, companyH *CompanyHandler, emulationH *EmulationHandler, userH *UserHandler) {
 	// Base API Group
 	api := r.Group("/api/v1")
 	{
@@ -33,5 +33,15 @@ func RegisterRoutes(r *gin.Engine, gameH *GameHandler, companyH *CompanyHandler,
 			emulations.PUT("/:id", emulationH.Update)
 			emulations.DELETE("/:id", emulationH.Delete)
 		}
+
+		users := api.Group("/users")
+		{
+			users.POST("/", userH.Create)
+			users.GET("/", userH.GetAll)
+			users.GET("/:id", userH.GetById)
+			users.PUT("/:id", userH.Update)
+			users.DELETE("/:id", userH.Delete)
+		}
+
 	}
 }
