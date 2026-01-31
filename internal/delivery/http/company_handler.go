@@ -19,7 +19,7 @@ func NewCompanyHandler(usecase *usecase.CompanyUsecase) *CompanyHandler {
 	}
 }
 
-func (h *CompanyHandler) Create(c *gin.Context) {
+func (h *CompanyHandler) CreateCompany(c *gin.Context) {
 	var company domain.Company
 
 	if err := c.ShouldBindJSON(&company); err != nil {
