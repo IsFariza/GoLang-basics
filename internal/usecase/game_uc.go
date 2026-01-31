@@ -28,6 +28,8 @@ func (uc *GameUseCase) CreateGame(ctx context.Context, game domain.Game) error {
 		return domain.ErrorInvalidDeveloper
 	}
 
+	game.CreatedAt = time.Now()
+
 	return uc.repo.Create(ctx, game)
 }
 
