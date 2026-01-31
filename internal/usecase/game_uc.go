@@ -8,30 +8,34 @@ import (
 )
 
 type GameUseCase struct {
-	repo domain.GameRepo
+	repo        domain.GameRepo
+	companyRepo domain.CompanyRepo
 }
 
-func NewGameUseCase(repo domain.GameRepo) *GameUseCase {
+func NewGameUseCase(repo domain.GameRepo, companyRepo domain.CompanyRepo) *GameUseCase {
 	return &GameUseCase{
-		repo: repo,
+		repo:        repo,
+		companyRepo: companyRepo,
 	}
 }
 
 func (uc *GameUseCase) CreateGame(ctx context.Context, game domain.Game) error {
-	//TODO: some buisness logic, maybe validation
+	if _, err := uc.companyRepo.GetById(ctx, game.PublisherId.Hex()); err != nil {
+		return domain.ErrorInvalidPublisher
+	}
+
+	if _, err := uc.companyRepo.GetById(ctx, game.DeveloperId.Hex()); err != nil {
+		return domain.ErrorInvalidDeveloper
+	}
 
 	return uc.repo.Create(ctx, game)
 }
 
 func (uc *GameUseCase) GetAll(ctx context.Context) ([]domain.Game, error) {
-	//TODO: some buisness logic, maybe validation
-
 	return uc.repo.GetAll(ctx)
 }
 
 func (uc *GameUseCase) GetById(ctx context.Context, id string) (domain.Game, error) {
-	//TODO: some buisness logic, maybe validation
-
 	return uc.repo.GetById(ctx, id)
 }
 
@@ -39,6 +43,24 @@ func (uc *GameUseCase) Update(ctx context.Context, id string, updatedGame domain
 	existingGame, err := uc.repo.GetById(ctx, id)
 	if err != nil {
 		return err
+	}
+
+	if !updatedGame.PublisherId.IsZero() {
+		_, err := uc.companyRepo.GetById(ctx, updatedGame.PublisherId.Hex())
+		if err != nil {
+			return domain.ErrorInvalidPublisher
+		}
+
+		existingGame.PublisherId = updatedGame.PublisherId
+	}
+
+	if !updatedGame.DeveloperId.IsZero() {
+		_, err := uc.companyRepo.GetById(ctx, updatedGame.DeveloperId.Hex())
+		if err != nil {
+			return domain.ErrorInvalidDeveloper
+		}
+
+		existingGame.DeveloperId = updatedGame.DeveloperId
 	}
 
 	if updatedGame.Title != "" {
@@ -64,7 +86,5 @@ func (uc *GameUseCase) Update(ctx context.Context, id string, updatedGame domain
 }
 
 func (uc *GameUseCase) Delete(ctx context.Context, id string) error {
-	//TODO: some buisness logic, maybe validation
-
 	return uc.repo.Delete(ctx, id)
 }
