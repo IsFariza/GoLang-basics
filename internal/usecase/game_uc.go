@@ -19,7 +19,7 @@ func NewGameUseCase(repo domain.GameRepo, companyRepo domain.CompanyRepo) *GameU
 	}
 }
 
-func (uc *GameUseCase) CreateGame(ctx context.Context, game domain.Game) error {
+func (uc *GameUseCase) Create(ctx context.Context, game *domain.Game) error {
 	if _, err := uc.companyRepo.GetById(ctx, game.PublisherId.Hex()); err != nil {
 		return domain.ErrorInvalidPublisher
 	}
@@ -33,15 +33,15 @@ func (uc *GameUseCase) CreateGame(ctx context.Context, game domain.Game) error {
 	return uc.repo.Create(ctx, game)
 }
 
-func (uc *GameUseCase) GetAll(ctx context.Context) ([]domain.Game, error) {
+func (uc *GameUseCase) GetAll(ctx context.Context) ([]*domain.Game, error) {
 	return uc.repo.GetAll(ctx)
 }
 
-func (uc *GameUseCase) GetById(ctx context.Context, id string) (domain.Game, error) {
+func (uc *GameUseCase) GetById(ctx context.Context, id string) (*domain.Game, error) {
 	return uc.repo.GetById(ctx, id)
 }
 
-func (uc *GameUseCase) Update(ctx context.Context, id string, updatedGame domain.Game) error {
+func (uc *GameUseCase) Update(ctx context.Context, id string, updatedGame *domain.Game) error {
 	existingGame, err := uc.repo.GetById(ctx, id)
 	if err != nil {
 		return err

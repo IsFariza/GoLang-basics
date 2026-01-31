@@ -18,14 +18,14 @@ func NewGameRepository(client *mongo.Client) *GameRepository {
 	}
 }
 
-func (r *GameRepository) Create(ctx context.Context, game domain.Game) error {
+func (r *GameRepository) Create(ctx context.Context, game *domain.Game) error {
 	_, err := r.collection.InsertOne(ctx, game)
 
 	return err
 }
 
-func (r *GameRepository) GetAll(ctx context.Context) ([]domain.Game, error) {
-	var games []domain.Game
+func (r *GameRepository) GetAll(ctx context.Context) ([]*domain.Game, error) {
+	var games []*domain.Game
 
 	cursor, err := r.collection.Find(ctx, bson.D{})
 	if err != nil {
@@ -37,12 +37,12 @@ func (r *GameRepository) GetAll(ctx context.Context) ([]domain.Game, error) {
 	return games, err
 }
 
-func (r *GameRepository) GetById(ctx context.Context, id string) (domain.Game, error) {
+func (r *GameRepository) GetById(ctx context.Context, id string) (*domain.Game, error) {
 	var game domain.Game
 
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {
-		return game, err
+		return nil, err
 	}
 
 	filter := bson.M{"_id": objID}
@@ -50,13 +50,13 @@ func (r *GameRepository) GetById(ctx context.Context, id string) (domain.Game, e
 	err = r.collection.FindOne(ctx, filter).Decode(&game)
 
 	if err != nil {
-		return game, domain.ErrorNotFound
+		return nil, domain.ErrorNotFound
 	}
 
-	return game, err
+	return &game, err
 }
 
-func (r *GameRepository) Update(ctx context.Context, id string, updatedGame domain.Game) error {
+func (r *GameRepository) Update(ctx context.Context, id string, updatedGame *domain.Game) error {
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return err
