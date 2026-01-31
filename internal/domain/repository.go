@@ -13,17 +13,17 @@ type GameRepo interface {
 }
 
 type CompanyRepo interface {
-	Create(ctx context.Context, company Company) error
-	GetAll(ctx context.Context) ([]Company, error)
-	GetById(ctx context.Context, id string) (Company, error)
-	Update(ctx context.Context, id string, updates Company) error
+	Create(ctx context.Context, company *Company) error
+	GetAll(ctx context.Context) ([]*Company, error)
+	GetById(ctx context.Context, id string) (*Company, error)
+	Update(ctx context.Context, id string, updates *Company) error
 	Delete(ctx context.Context, id string) error
 }
 
 type EmulationRepo interface {
-	Create(ctx context.Context, emulation Emulation) error
-	GetAll(ctx context.Context) ([]Emulation, error)
-	GetById(ctx context.Context, id string) (Emulation, error)
-	Update(ctx context.Context, id string, updates Emulation) error
+	Create(ctx context.Context, emulation *Emulation) error
+	GetAll(ctx context.Context) ([]*Emulation, error)
+	GetById(ctx context.Context, id string) (*Emulation, error)
+	Update(ctx context.Context, id string, updates *Emulation) error
 	Delete(ctx context.Context, id string) error
 }
