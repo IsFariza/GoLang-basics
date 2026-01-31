@@ -5,21 +5,20 @@ import (
 	"net/http"
 
 	"github.com/BlackHole55/software-store-final/internal/domain"
-	"github.com/BlackHole55/software-store-final/internal/usecase"
 	"github.com/gin-gonic/gin"
 )
 
 type EmulationHandler struct {
-	usecase *usecase.EmulationUsecase
+	usecase domain.EmulationUC
 }
 
-func NewEmulationHandler(usecase *usecase.EmulationUsecase) *EmulationHandler {
+func NewEmulationHandler(usecase domain.EmulationUC) *EmulationHandler {
 	return &EmulationHandler{
 		usecase: usecase,
 	}
 }
 
-func (h *EmulationHandler) CreateEmulation(c *gin.Context) {
+func (h *EmulationHandler) Create(c *gin.Context) {
 	ctx := c.Request.Context()
 	var emulation domain.Emulation
 	if err := c.ShouldBindJSON(&emulation); err != nil {
@@ -27,7 +26,7 @@ func (h *EmulationHandler) CreateEmulation(c *gin.Context) {
 		return
 	}
 
-	err := h.usecase.CreateEmulation(ctx, emulation)
+	err := h.usecase.Create(ctx, &emulation)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -69,7 +68,7 @@ func (h *EmulationHandler) Update(c *gin.Context) {
 		return
 	}
 
-	err := h.usecase.Update(ctx, id, emulation)
+	err := h.usecase.Update(ctx, id, &emulation)
 	if err != nil {
 		if errors.Is(err, domain.ErrorNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Emulation not found"})
@@ -80,7 +79,7 @@ func (h *EmulationHandler) Update(c *gin.Context) {
 
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Game updated successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Emulation updated successfully"})
 }
 
 func (h *EmulationHandler) Delete(c *gin.Context) {
@@ -97,5 +96,5 @@ func (h *EmulationHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Game deleted"})
+	c.JSON(http.StatusOK, gin.H{"message": "Emulation deleted"})
 }
