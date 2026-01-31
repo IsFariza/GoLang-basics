@@ -16,32 +16,30 @@ func NewGameUseCase(repo domain.GameRepo) *GameUseCase {
 	}
 }
 
-func (s *GameUseCase) CreateGame(ctx context.Context, game domain.Game) error {
+func (uc *GameUseCase) CreateGame(ctx context.Context, game domain.Game) error {
 	//TODO: some buisness logic, maybe validation
 
-	return s.repo.Create(ctx, game)
+	return uc.repo.Create(ctx, game)
 }
 
-func (s *GameUseCase) GetAll(ctx context.Context) ([]domain.Game, error) {
+func (uc *GameUseCase) GetAll(ctx context.Context) ([]domain.Game, error) {
 	//TODO: some buisness logic, maybe validation
 
-	return s.repo.GetAll(ctx)
+	return uc.repo.GetAll(ctx)
 }
 
-func (s *GameUseCase) GetById(ctx context.Context, id string) (domain.Game, error) {
+func (uc *GameUseCase) GetById(ctx context.Context, id string) (domain.Game, error) {
 	//TODO: some buisness logic, maybe validation
 
-	return s.repo.GetById(ctx, id)
+	return uc.repo.GetById(ctx, id)
 }
 
-func (s *GameUseCase) Update(ctx context.Context, id string, updates domain.Game) error {
-	//TODO: some buisness logic, maybe validation
-
-	return s.repo.Update(ctx, id, updates)
+func (uc *GameUseCase) Update(ctx context.Context, id string, updatedGame domain.Game) error {
+	return uc.repo.Update(ctx, id, updatedGame)
 }
 
-func (s *GameUseCase) Delete(ctx context.Context, id string) error {
+func (uc *GameUseCase) Delete(ctx context.Context, id string) error {
 	//TODO: some buisness logic, maybe validation
 
-	return s.repo.Delete(ctx, id)
+	return uc.repo.Delete(ctx, id)
 }
