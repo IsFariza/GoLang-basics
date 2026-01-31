@@ -1,6 +1,7 @@
 package http
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/BlackHole55/software-store-final/internal/domain"
@@ -67,7 +68,11 @@ func (h *CompanyHandler) Update(c *gin.Context) {
 
 	err := h.usecase.Update(ctx, id, updates)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if errors.Is(err, domain.ErrorNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Company not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
 		return
 	}
 
@@ -79,10 +84,12 @@ func (h *CompanyHandler) Delete(c *gin.Context) {
 	id := c.Param("id")
 	err := h.usecase.Delete(ctx, id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		if errors.Is(err, domain.ErrorNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Company not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
 	}
-	//todo check doc id exist
 
 	c.JSON(http.StatusOK, gin.H{"message": "company deleted"})
 }
