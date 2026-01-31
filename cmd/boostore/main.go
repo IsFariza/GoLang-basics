@@ -30,7 +30,7 @@ func main() {
 	gameRepo := mongodb.NewGameRepository(client)
 	companyRepo := mongodb.NewCompanyRepository(client)
 
-	gameUC := usecase.NewGameUseCase(gameRepo)
+	gameUC := usecase.NewGameUseCase(gameRepo, companyRepo)
 	companyUC := usecase.NewCompanyUsecase(companyRepo)
 
 	gameHandler := delivery.NewGameHandler(gameUC)
