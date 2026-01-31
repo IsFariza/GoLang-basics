@@ -9,7 +9,7 @@ func RegisterRoutes(r *gin.Engine, gameH *GameHandler, companyH *CompanyHandler,
 		// Games API Group
 		games := api.Group("/games")
 		{
-			games.POST("/", gameH.CreateGame)
+			games.POST("/", gameH.Create)
 			games.GET("/", gameH.GetAll)
 			games.GET("/:id", gameH.GetById)
 			games.PUT("/:id", gameH.Update)
