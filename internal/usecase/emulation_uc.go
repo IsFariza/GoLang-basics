@@ -16,21 +16,21 @@ func NewEmulationUsecase(emulationRepo domain.EmulationRepo) *EmulationUsecase {
 	}
 }
 
-func (uc *EmulationUsecase) CreateEmulation(ctx context.Context, emulation domain.Emulation) error {
+func (uc *EmulationUsecase) Create(ctx context.Context, emulation *domain.Emulation) error {
 	return uc.emulationRepo.Create(ctx, emulation)
 
 }
 
-func (uc *EmulationUsecase) GetAll(ctx context.Context) ([]domain.Emulation, error) {
+func (uc *EmulationUsecase) GetAll(ctx context.Context) ([]*domain.Emulation, error) {
 	return uc.emulationRepo.GetAll(ctx)
 
 }
 
-func (uc *EmulationUsecase) GetById(ctx context.Context, id string) (domain.Emulation, error) {
+func (uc *EmulationUsecase) GetById(ctx context.Context, id string) (*domain.Emulation, error) {
 	return uc.emulationRepo.GetById(ctx, id)
 }
 
-func (uc *EmulationUsecase) Update(ctx context.Context, id string, updatedEmulation domain.Emulation) error {
+func (uc *EmulationUsecase) Update(ctx context.Context, id string, updatedEmulation *domain.Emulation) error {
 
 	existingCompany, err := uc.emulationRepo.GetById(ctx, id)
 	if err != nil {

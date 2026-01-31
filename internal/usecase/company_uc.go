@@ -17,23 +17,22 @@ func NewCompanyUsecase(companyRepo domain.CompanyRepo) *CompanyUsecase {
 	}
 }
 
-func (uc *CompanyUsecase) CreateCompany(ctx context.Context, company domain.Company) error {
+func (uc *CompanyUsecase) Create(ctx context.Context, company *domain.Company) error {
 	company.CreatedAt = time.Now()
-	company.UpdatedAt = time.Now()
 	return uc.companyRepo.Create(ctx, company)
 
 }
 
-func (uc *CompanyUsecase) GetAll(ctx context.Context) ([]domain.Company, error) {
+func (uc *CompanyUsecase) GetAll(ctx context.Context) ([]*domain.Company, error) {
 	return uc.companyRepo.GetAll(ctx)
 
 }
 
-func (uc *CompanyUsecase) GetById(ctx context.Context, id string) (domain.Company, error) {
+func (uc *CompanyUsecase) GetById(ctx context.Context, id string) (*domain.Company, error) {
 	return uc.companyRepo.GetById(ctx, id)
 }
 
-func (uc *CompanyUsecase) Update(ctx context.Context, id string, updatedCompany domain.Company) error {
+func (uc *CompanyUsecase) Update(ctx context.Context, id string, updatedCompany *domain.Company) error {
 	existingCompany, err := uc.companyRepo.GetById(ctx, id)
 	if err != nil {
 		return err
@@ -59,7 +58,8 @@ func (uc *CompanyUsecase) Update(ctx context.Context, id string, updatedCompany 
 		existingCompany.Contacts.Phone = updatedCompany.Contacts.Phone
 	}
 
-	existingCompany.UpdatedAt = time.Now()
+	now := time.Now()
+	existingCompany.UpdatedAt = &now
 
 	return uc.companyRepo.Update(ctx, id, existingCompany)
 }
