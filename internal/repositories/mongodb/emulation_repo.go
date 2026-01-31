@@ -18,14 +18,14 @@ func NewEmulationRepository(client *mongo.Client) *EmulationRepository {
 	}
 }
 
-func (r *EmulationRepository) Create(ctx context.Context, emulation domain.Emulation) error {
+func (r *EmulationRepository) Create(ctx context.Context, emulation *domain.Emulation) error {
 	_, err := r.collection.InsertOne(ctx, emulation)
 
 	return err
 }
 
-func (r *EmulationRepository) GetAll(ctx context.Context) ([]domain.Emulation, error) {
-	var emulations []domain.Emulation
+func (r *EmulationRepository) GetAll(ctx context.Context) ([]*domain.Emulation, error) {
+	var emulations []*domain.Emulation
 
 	cursor, err := r.collection.Find(ctx, bson.D{})
 	if err != nil {
@@ -37,8 +37,8 @@ func (r *EmulationRepository) GetAll(ctx context.Context) ([]domain.Emulation, e
 	return emulations, err
 }
 
-func (r *EmulationRepository) GetById(ctx context.Context, id string) (domain.Emulation, error) {
-	var emulation domain.Emulation
+func (r *EmulationRepository) GetById(ctx context.Context, id string) (*domain.Emulation, error) {
+	var emulation *domain.Emulation
 
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {
@@ -56,7 +56,7 @@ func (r *EmulationRepository) GetById(ctx context.Context, id string) (domain.Em
 	return emulation, err
 }
 
-func (r *EmulationRepository) Update(ctx context.Context, id string, updatedEmulation domain.Emulation) error {
+func (r *EmulationRepository) Update(ctx context.Context, id string, updatedEmulation *domain.Emulation) error {
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return err

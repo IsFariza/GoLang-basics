@@ -18,15 +18,15 @@ func NewCompanyRepository(client *mongo.Client) *CompanyRepository {
 	}
 }
 
-func (r *CompanyRepository) Create(ctx context.Context, company domain.Company) error {
+func (r *CompanyRepository) Create(ctx context.Context, company *domain.Company) error {
 
 	_, err := r.collection.InsertOne(ctx, company)
 
 	return err
 }
 
-func (r *CompanyRepository) GetAll(ctx context.Context) ([]domain.Company, error) {
-	var companies []domain.Company
+func (r *CompanyRepository) GetAll(ctx context.Context) ([]*domain.Company, error) {
+	var companies []*domain.Company
 
 	cursor, err := r.collection.Find(ctx, bson.M{})
 	if err != nil {
@@ -39,8 +39,8 @@ func (r *CompanyRepository) GetAll(ctx context.Context) ([]domain.Company, error
 	return companies, err
 }
 
-func (r *CompanyRepository) GetById(ctx context.Context, id string) (domain.Company, error) {
-	var company domain.Company
+func (r *CompanyRepository) GetById(ctx context.Context, id string) (*domain.Company, error) {
+	var company *domain.Company
 
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {
@@ -59,7 +59,7 @@ func (r *CompanyRepository) GetById(ctx context.Context, id string) (domain.Comp
 
 }
 
-func (r *CompanyRepository) Update(ctx context.Context, id string, updatedCompany domain.Company) error {
+func (r *CompanyRepository) Update(ctx context.Context, id string, updatedCompany *domain.Company) error {
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return err
