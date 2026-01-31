@@ -18,7 +18,7 @@ func RegisterRoutes(r *gin.Engine, gameH *GameHandler, companyH *CompanyHandler,
 
 		companies := api.Group("/companies")
 		{
-			companies.POST("/", companyH.CreateCompany)
+			companies.POST("/", companyH.Create)
 			companies.GET("/", companyH.GetAll)
 			companies.GET("/:id", companyH.GetById)
 			companies.PUT("/:id", companyH.Update)
@@ -27,7 +27,7 @@ func RegisterRoutes(r *gin.Engine, gameH *GameHandler, companyH *CompanyHandler,
 
 		emulations := api.Group("/emulations")
 		{
-			emulations.POST("/", emulationH.CreateEmulation)
+			emulations.POST("/", emulationH.Create)
 			emulations.GET("/", emulationH.GetAll)
 			emulations.GET("/:id", emulationH.GetById)
 			emulations.PUT("/:id", emulationH.Update)
