@@ -31,7 +31,7 @@ func main() {
 	companyRepo := mongodb.NewCompanyRepository(client)
 	emulationRepo := mongodb.NewEmulationRepository(client)
 
-	gameUC := usecase.NewGameUseCase(gameRepo, companyRepo)
+	gameUC := usecase.NewGameUseCase(gameRepo, companyRepo, emulationRepo)
 	companyUC := usecase.NewCompanyUsecase(companyRepo)
 	emulationUC := usecase.NewEmulationUsecase(emulationRepo)
 
