@@ -33,10 +33,35 @@ func (uc *CompanyUsecase) GetById(ctx context.Context, id string) (domain.Compan
 	return uc.companyRepo.GetById(ctx, id)
 }
 
-func (uc *CompanyUsecase) Update(ctx context.Context, id string, updates domain.Company) error {
-	updates.UpdatedAt = time.Now()
-	return uc.companyRepo.Update(ctx, id, updates)
+func (uc *CompanyUsecase) Update(ctx context.Context, id string, updatedCompany domain.Company) error {
+	existingCompany, err := uc.companyRepo.GetById(ctx, id)
+	if err != nil {
+		return err
+	}
 
+	if updatedCompany.Name != "" {
+		existingCompany.Name = updatedCompany.Name
+	}
+
+	if updatedCompany.Description != "" {
+		existingCompany.Description = updatedCompany.Description
+	}
+
+	if updatedCompany.Country != "" {
+		existingCompany.Country = updatedCompany.Country
+	}
+
+	if updatedCompany.Contacts.Email != "" {
+		existingCompany.Contacts.Email = updatedCompany.Contacts.Email
+	}
+
+	if updatedCompany.Contacts.Phone != "" {
+		existingCompany.Contacts.Phone = updatedCompany.Contacts.Phone
+	}
+
+	existingCompany.UpdatedAt = time.Now()
+
+	return uc.companyRepo.Update(ctx, id, existingCompany)
 }
 
 func (uc *CompanyUsecase) Delete(ctx context.Context, id string) error {
