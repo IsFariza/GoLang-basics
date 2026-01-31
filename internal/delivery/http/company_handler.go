@@ -29,7 +29,7 @@ func (h *CompanyHandler) Create(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	h.usecase.Create(ctx, company)
+	h.usecase.CreateCompany(ctx, company)
 
 }
 
