@@ -31,6 +31,7 @@ func (h *CompanyHandler) Create(c *gin.Context) {
 
 	h.usecase.CreateCompany(ctx, company)
 
+	c.JSON(http.StatusCreated, gin.H{"message": "Company created successfully"})
 }
 
 func (h *CompanyHandler) GetAll(c *gin.Context) {
