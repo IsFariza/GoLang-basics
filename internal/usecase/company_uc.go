@@ -17,7 +17,7 @@ func NewCompanyUsecase(companyRepo domain.CompanyRepo) *CompanyUsecase {
 	}
 }
 
-func (uc *CompanyUsecase) Create(ctx context.Context, company domain.Company) error {
+func (uc *CompanyUsecase) CreateCompany(ctx context.Context, company domain.Company) error {
 	company.CreatedAt = time.Now()
 	company.UpdatedAt = time.Now()
 	return uc.companyRepo.Create(ctx, company)
