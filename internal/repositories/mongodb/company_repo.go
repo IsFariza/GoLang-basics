@@ -51,6 +51,10 @@ func (r *CompanyRepository) GetById(ctx context.Context, id string) (domain.Comp
 
 	err = r.collection.FindOne(ctx, filter).Decode(&company)
 
+	if err != nil {
+		return company, domain.ErrorNotFound
+	}
+
 	return company, err
 
 }
