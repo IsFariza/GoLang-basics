@@ -38,11 +38,11 @@ func (r *EmulationRepository) GetAll(ctx context.Context) ([]*domain.Emulation, 
 }
 
 func (r *EmulationRepository) GetById(ctx context.Context, id string) (*domain.Emulation, error) {
-	var emulation *domain.Emulation
+	var emulation domain.Emulation
 
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {
-		return emulation, err
+		return nil, err
 	}
 
 	filter := bson.M{"_id": objID}
@@ -50,10 +50,10 @@ func (r *EmulationRepository) GetById(ctx context.Context, id string) (*domain.E
 	err = r.collection.FindOne(ctx, filter).Decode(&emulation)
 
 	if err != nil {
-		return emulation, domain.ErrorNotFound
+		return nil, domain.ErrorNotFound
 	}
 
-	return emulation, err
+	return &emulation, err
 }
 
 func (r *EmulationRepository) Update(ctx context.Context, id string, updatedEmulation *domain.Emulation) error {

@@ -28,7 +28,7 @@ func (r *CompanyRepository) Create(ctx context.Context, company *domain.Company)
 func (r *CompanyRepository) GetAll(ctx context.Context) ([]*domain.Company, error) {
 	var companies []*domain.Company
 
-	cursor, err := r.collection.Find(ctx, bson.M{})
+	cursor, err := r.collection.Find(ctx, bson.D{})
 	if err != nil {
 		return nil, err
 	}
@@ -40,11 +40,11 @@ func (r *CompanyRepository) GetAll(ctx context.Context) ([]*domain.Company, erro
 }
 
 func (r *CompanyRepository) GetById(ctx context.Context, id string) (*domain.Company, error) {
-	var company *domain.Company
+	var company domain.Company
 
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {
-		return company, err
+		return nil, err
 	}
 
 	filter := bson.M{"_id": objID}
@@ -52,10 +52,10 @@ func (r *CompanyRepository) GetById(ctx context.Context, id string) (*domain.Com
 	err = r.collection.FindOne(ctx, filter).Decode(&company)
 
 	if err != nil {
-		return company, domain.ErrorNotFound
+		return nil, domain.ErrorNotFound
 	}
 
-	return company, err
+	return &company, err
 
 }
 
