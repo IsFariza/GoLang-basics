@@ -49,13 +49,17 @@ func (h *EmulationHandler) GetAll(c *gin.Context) {
 func (h *EmulationHandler) GetById(c *gin.Context) {
 	ctx := c.Request.Context()
 	id := c.Param("id")
-	task, err := h.usecase.GetById(ctx, id)
+	emulation, err := h.usecase.GetById(ctx, id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		if errors.Is(err, domain.ErrorNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Emulation not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
 		return
 	}
 
-	c.JSON(http.StatusOK, task)
+	c.JSON(http.StatusOK, emulation)
 }
 
 func (h *EmulationHandler) Update(c *gin.Context) {
@@ -76,7 +80,6 @@ func (h *EmulationHandler) Update(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		}
 		return
-
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Emulation updated successfully"})

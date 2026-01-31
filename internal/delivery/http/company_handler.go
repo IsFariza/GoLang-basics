@@ -28,7 +28,11 @@ func (h *CompanyHandler) Create(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	h.usecase.Create(ctx, &company)
+	err := h.usecase.Create(ctx, &company)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Company created successfully"})
 }
@@ -47,13 +51,17 @@ func (h *CompanyHandler) GetAll(c *gin.Context) {
 func (h *CompanyHandler) GetById(c *gin.Context) {
 	ctx := c.Request.Context()
 	id := c.Param("id")
-	companies, err := h.usecase.GetById(ctx, id)
+	company, err := h.usecase.GetById(ctx, id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if errors.Is(err, domain.ErrorNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Company not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
 		return
 	}
 
-	c.JSON(http.StatusOK, companies)
+	c.JSON(http.StatusOK, company)
 }
 
 func (h *CompanyHandler) Update(c *gin.Context) {
