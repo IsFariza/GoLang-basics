@@ -13,7 +13,7 @@ type Company struct {
 	Country     string        `bson:"country" json:"country"`
 	Contacts    Contacts      `bson:"contacts" json:"contacts"`
 	CreatedAt   time.Time     `bson:"created_at" json:"created_at"`
-	UpdatedAt   time.Time     `bson:"updated_at" json:"updated_at"`
+	UpdatedAt   *time.Time    `bson:"updated_at" json:"updated_at"`
 }
 
 type Contacts struct {
