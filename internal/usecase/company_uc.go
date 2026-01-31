@@ -60,6 +60,7 @@ func (uc *CompanyUsecase) Update(ctx context.Context, id string, updatedCompany 
 
 	now := time.Now()
 	existingCompany.UpdatedAt = &now
+	existingCompany.IsVerified = false
 
 	return uc.companyRepo.Update(ctx, id, existingCompany)
 }
