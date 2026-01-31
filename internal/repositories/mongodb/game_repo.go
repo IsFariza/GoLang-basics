@@ -49,6 +49,10 @@ func (r *GameRepository) GetById(ctx context.Context, id string) (domain.Game, e
 
 	err = r.collection.FindOne(ctx, filter).Decode(&game)
 
+	if err != nil {
+		return game, domain.ErrorNotFound
+	}
+
 	return game, err
 }
 
