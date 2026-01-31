@@ -69,7 +69,6 @@ func (r *GameRepository) Update(ctx context.Context, id string, updates domain.G
 		"is_verified":  false,
 	}}
 
-	// TODO: handle not found
 	res, err := r.collection.UpdateOne(ctx, filter, update)
 	if res.MatchedCount == 0 {
 		return domain.ErrorNotFound
@@ -86,8 +85,10 @@ func (r *GameRepository) Delete(ctx context.Context, id string) error {
 
 	filter := bson.M{"_id": objID}
 
-	// TODO: handle not found
-	_, err = r.collection.DeleteOne(ctx, filter)
+	res, err := r.collection.DeleteOne(ctx, filter)
+	if res.DeletedCount == 0 {
+		return domain.ErrorNotFound
+	}
 
 	return err
 }
