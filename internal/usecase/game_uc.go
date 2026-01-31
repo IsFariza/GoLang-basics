@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"time"
 
 	"github.com/BlackHole55/software-store-final/internal/domain"
 )
@@ -35,7 +36,31 @@ func (uc *GameUseCase) GetById(ctx context.Context, id string) (domain.Game, err
 }
 
 func (uc *GameUseCase) Update(ctx context.Context, id string, updatedGame domain.Game) error {
-	return uc.repo.Update(ctx, id, updatedGame)
+	existingGame, err := uc.repo.GetById(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if updatedGame.Title != "" {
+		existingGame.Title = updatedGame.Title
+	}
+
+	if updatedGame.Description != "" {
+		existingGame.Description = updatedGame.Description
+	}
+
+	if !updatedGame.ReleaseDate.IsZero() {
+		existingGame.ReleaseDate = updatedGame.ReleaseDate
+	}
+
+	if updatedGame.Price != 0 {
+		existingGame.Price = updatedGame.Price
+	}
+
+	existingGame.UpdatedAt = time.Now()
+	existingGame.IsVerified = false
+
+	return uc.repo.Update(ctx, id, existingGame)
 }
 
 func (uc *GameUseCase) Delete(ctx context.Context, id string) error {
