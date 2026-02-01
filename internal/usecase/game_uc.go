@@ -11,13 +11,15 @@ type GameUseCase struct {
 	repo          domain.GameRepo
 	companyRepo   domain.CompanyRepo
 	emulationRepo domain.EmulationRepo
+	reviewRepo  domain.ReviewRepo
 }
 
-func NewGameUseCase(repo domain.GameRepo, companyRepo domain.CompanyRepo, emulationRepo domain.EmulationRepo) *GameUseCase {
+func NewGameUseCase(repo domain.GameRepo, companyRepo domain.CompanyRepo, emulationRepo domain.EmulationRepo, reviewRepo domain.ReviewRepo) *GameUseCase {
 	return &GameUseCase{
 		repo:          repo,
 		companyRepo:   companyRepo,
 		emulationRepo: emulationRepo,
+		reviewRepo: reviewRepo,
 	}
 }
 
@@ -47,6 +49,15 @@ func (uc *GameUseCase) GetAll(ctx context.Context) ([]*domain.Game, error) {
 
 func (uc *GameUseCase) GetById(ctx context.Context, id string) (*domain.Game, error) {
 	return uc.repo.GetById(ctx, id)
+}
+
+func (uc *GameUseCase) GetReviewsByGameId(ctx context.Context, gameId string) ([]*domain.Review, error) {
+	_, err := uc.repo.GetById(ctx, gameId)
+	if err != nil {
+		return nil, err
+	}
+
+	return uc.reviewRepo.GetReviewsByGameId(ctx, gameId)
 }
 
 func (uc *GameUseCase) Update(ctx context.Context, id string, updatedGame *domain.Game) error {

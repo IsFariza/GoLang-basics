@@ -8,6 +8,7 @@ type GameRepo interface {
 	Create(ctx context.Context, game *Game) error
 	GetAll(ctx context.Context) ([]*Game, error)
 	GetById(ctx context.Context, id string) (*Game, error)
+
 	Update(ctx context.Context, id string, updates *Game) error
 	Delete(ctx context.Context, id string) error
 	Approve(ctx context.Context, id string) error
@@ -35,5 +36,20 @@ type UserRepo interface {
 	GetAll(ctx context.Context) ([]*User, error)
 	GetById(ctx context.Context, id string) (*User, error)
 	Update(ctx context.Context, id string, updates *User) error
+}
+
+type ReviewRepo interface {
+	Create(ctx context.Context, review *Review) error
+	GetAll(ctx context.Context) ([]*Review, error)
+	GetById(ctx context.Context, id string) (*Review, error)
+	GetReviewsByGameId(ctx context.Context, gameId string) ([]*Review, error)
+	Update(ctx context.Context, id string, updates *Review) error
+	Delete(ctx context.Context, id string) error
+}
+
+type PurchaseRepo interface {
+	Create(ctx context.Context, purchase *Purchase) error
+	GetAll(ctx context.Context) ([]*Purchase, error)
+	GetById(ctx context.Context, id string) (*Purchase, error)
 	Delete(ctx context.Context, id string) error
 }

@@ -7,12 +7,11 @@ import (
 )
 
 type Purchase struct {
-	ID           bson.ObjectID `bson:"_id,omitempty" json:"_id"`
-	UserId       bson.ObjectID `bson:"user_id,omitempty" json:"user_id"`
-	PurchaseDate time.Time     `bson:"purchase_date" json:"purchase_date"`
-	TotalAmount  float32       `bson:"total_amount" json:"total_amount"`
-	Items        []Item        `bson:"items" json:"items"`
-	Payment      Payment       `bson:"payment" json:"payment"`
+	ID          bson.ObjectID `bson:"_id,omitempty" json:"_id"`
+	UserId      bson.ObjectID `bson:"user_id" json:"user_id" binding:"required"`
+	TotalAmount float32       `bson:"total_amount" json:"total_amount"`
+	Items       []Item        `bson:"items" json:"items" binding:"required,min=1"`
+	Payment     Payment       `bson:"payment" json:"payment"`
 }
 
 type Item struct {
