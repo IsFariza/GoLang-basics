@@ -9,12 +9,14 @@ import (
 
 type GameUseCase struct {
 	repo        domain.GameRepo
+	reviewRepo  domain.ReviewRepo
 	companyRepo domain.CompanyRepo
 }
 
-func NewGameUseCase(repo domain.GameRepo, companyRepo domain.CompanyRepo) *GameUseCase {
+func NewGameUseCase(repo domain.GameRepo, companyRepo domain.CompanyRepo, reviewRepo domain.ReviewRepo) *GameUseCase {
 	return &GameUseCase{
 		repo:        repo,
+		reviewRepo:  reviewRepo,
 		companyRepo: companyRepo,
 	}
 }
@@ -39,6 +41,15 @@ func (uc *GameUseCase) GetAll(ctx context.Context) ([]*domain.Game, error) {
 
 func (uc *GameUseCase) GetById(ctx context.Context, id string) (*domain.Game, error) {
 	return uc.repo.GetById(ctx, id)
+}
+
+func (uc *GameUseCase) GetReviewsByGameId(ctx context.Context, gameId string) ([]*domain.Review, error) {
+	_, err := uc.repo.GetById(ctx, gameId)
+	if err != nil {
+		return nil, err
+	}
+
+	return uc.reviewRepo.GetReviewsByGameId(ctx, gameId)
 }
 
 func (uc *GameUseCase) Update(ctx context.Context, id string, updatedGame *domain.Game) error {
