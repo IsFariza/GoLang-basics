@@ -27,6 +27,7 @@ func (uc *UserUseCase) SignUp(ctx context.Context, user *domain.User, password s
 
 	user.PasswordHash = hash
 	user.Role = "user"
+	user.CreatedAt = time.Now()
 
 	return uc.repo.Create(ctx, user)
 }
