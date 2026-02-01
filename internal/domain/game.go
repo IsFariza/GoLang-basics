@@ -15,7 +15,7 @@ type Game struct {
 	Title          string        `bson:"title" json:"title" binding:"required,min=2,max=100"`
 	Description    string        `bson:"description" json:"description" binding:"max=1000"`
 	ReleaseDate    *time.Time    `bson:"release_date" json:"release_date"`
-	Price          *float32      `bson:"price" json:"price" binding:"omitempty,min=0"`
+	Price          *float32      `bson:"price" json:"price" binding:"required,min=0"`
 	IsVerified     bool          `bson:"is_verified" json:"is_verified"`
 	Category       []string      `bson:"category" json:"category" binding:"omitempty,min=1,dive,min=1"`
 	CreatedAt      time.Time     `bson:"created_at" json:"created_at"`
