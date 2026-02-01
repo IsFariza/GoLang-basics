@@ -82,6 +82,18 @@ func (h *GameHandler) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Game updated successfully"})
 }
 
+// GET /games/:id/reviews
+func (h *GameHandler) GetReviewsByGameId(c *gin.Context) {
+	id := c.Param("id")
+	ctx := c.Request.Context()
+	reviews, err := h.usecase.GetReviewsByGameId(ctx, id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, reviews)
+}
+
 // DELETE api/v1/games/:id
 func (h *GameHandler) Delete(c *gin.Context) {
 	id := c.Param("id")
