@@ -88,3 +88,23 @@ func (r *GameRepository) Delete(ctx context.Context, id string) error {
 
 	return err
 }
+
+func (r *GameRepository) Approve(ctx context.Context, id string) error {
+	objID, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": objID}
+	update := bson.M{"$set": bson.M{"is_verified": true}}
+
+	res, err := r.collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+
+	if res.MatchedCount == 0 {
+		return domain.ErrorNotFound
+	}
+	return nil
+}
