@@ -36,6 +36,7 @@ type UserRepo interface {
 	GetAll(ctx context.Context) ([]*User, error)
 	GetById(ctx context.Context, id string) (*User, error)
 	Update(ctx context.Context, id string, updates *User) error
+	Delete(ctx context.Context, id string) error
 }
 
 type ReviewRepo interface {
