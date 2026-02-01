@@ -2,9 +2,11 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/BlackHole55/software-store-final/internal/domain"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserUseCase struct {
@@ -15,6 +17,31 @@ func NewUserUseCase(repo domain.UserRepo) *UserUseCase {
 	return &UserUseCase{
 		repo: repo,
 	}
+}
+
+func (uc *UserUseCase) SignUp(ctx context.Context, user *domain.User, password string) error {
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	user.PasswordHash = hash
+	user.Role = "user"
+
+	return uc.repo.Create(ctx, user)
+}
+
+func (uc *UserUseCase) Login(ctx context.Context, email, password string) (*domain.User, error) {
+	user, err := uc.repo.GetByEmail(ctx, email)
+	if err != nil {
+		return nil, errors.New("User not found")
+	}
+
+	err = bcrypt.CompareHashAndPassword(user.PasswordHash, []byte(password))
+	if err != nil {
+		return nil, errors.New("invalid password")
+	}
+	return user, nil
 }
 
 func (uc *UserUseCase) Create(ctx context.Context, user *domain.User) error {
