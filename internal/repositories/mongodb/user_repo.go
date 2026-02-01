@@ -56,6 +56,20 @@ func (r *UserRepository) GetById(ctx context.Context, id string) (*domain.User, 
 	return &user, err
 }
 
+func (r *UserRepository) GetByEmail(ctx context.Context, email string) (*domain.User, error) {
+	var user domain.User
+
+	filter := bson.M{"email": email}
+
+	err := r.collection.FindOne(ctx, filter).Decode(&user)
+
+	if err != nil {
+		return nil, domain.ErrorNotFound
+	}
+
+	return &user, err
+}
+
 func (r *UserRepository) Update(ctx context.Context, id string, updatedUser *domain.User) error {
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {
