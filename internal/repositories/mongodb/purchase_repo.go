@@ -41,7 +41,7 @@ func (r *PurchaseRepo) GetById(ctx context.Context, id string) (*domain.Purchase
 		return nil, err
 	}
 
-	filter := bson.D{{"_id", objID}}
+	filter := bson.M{"_id": objID}
 	err = r.collection.FindOne(ctx, filter).Decode(&purchase)
 	if err != nil {
 		return nil, domain.ErrorNotFound
