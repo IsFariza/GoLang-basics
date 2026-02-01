@@ -45,12 +45,6 @@ func (uc *UserUseCase) Login(ctx context.Context, email, password string) (*doma
 	return user, nil
 }
 
-func (uc *UserUseCase) Create(ctx context.Context, user *domain.User) error {
-	user.CreatedAt = time.Now()
-
-	return uc.repo.Create(ctx, user)
-}
-
 func (uc *UserUseCase) GetAll(ctx context.Context) ([]*domain.User, error) {
 	return uc.repo.GetAll(ctx)
 }

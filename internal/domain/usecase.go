@@ -30,7 +30,6 @@ type EmulationUC interface {
 type UserUC interface {
 	SignUp(ctx context.Context, user *User, password string) error
 	Login(ctx context.Context, username, password string) (*User, error)
-	Create(ctx context.Context, user *User) error
 	GetAll(ctx context.Context) ([]*User, error)
 	GetById(ctx context.Context, id string) (*User, error)
 	Update(ctx context.Context, id string, updates *User) error

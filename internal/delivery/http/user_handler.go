@@ -72,25 +72,6 @@ func (h *UserHandler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Logged in successfully"})
 }
 
-func (h *UserHandler) Create(c *gin.Context) {
-	var user domain.User
-
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx := c.Request.Context()
-
-	err := h.usecase.Create(ctx, &user)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusCreated, gin.H{"message": "User created successfully"})
-}
-
 func (h *UserHandler) GetAll(c *gin.Context) {
 	ctx := c.Request.Context()
 	companies, err := h.usecase.GetAll(ctx)
