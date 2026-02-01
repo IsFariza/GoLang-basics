@@ -31,6 +31,17 @@ func RegisterRoutes(r *gin.Engine, gameH *GameHandler, companyH *CompanyHandler,
 			auth.PUT("/emulations/:id", emulationH.Update)
 			auth.DELETE("/emulations/:id", emulationH.Delete)
 
+			auth.POST("/", purchaseH.Create)
+			auth.GET("/", purchaseH.GetAll)
+			auth.GET("/:id", purchaseH.GetById)
+			auth.DELETE("/:id", purchaseH.Delete)
+
+			auth.POST("/", reviewH.Create)
+			auth.GET("/", reviewH.GetAll)
+			auth.GET("/:id", reviewH.GetById)
+			auth.PUT("/:id", reviewH.Update)
+			auth.DELETE("/:id", reviewH.Delete)
+
 			// Only for admins
 			admin := auth.Group("/admin", AuthMiddleware("admin"))
 			{
@@ -38,21 +49,6 @@ func RegisterRoutes(r *gin.Engine, gameH *GameHandler, companyH *CompanyHandler,
 				admin.GET("/users", userH.GetAll)
 				admin.DELETE("/users/:id", userH.Delete)
 			}
-		}
-		purchases := api.Group("/purchases")
-		{
-			purchases.POST("/", purchaseH.Create)
-			purchases.GET("/", purchaseH.GetAll)
-			purchases.GET("/:id", purchaseH.GetById)
-			purchases.DELETE("/:id", purchaseH.Delete)
-		}
-		reviews := api.Group("/reviews")
-		{
-			reviews.POST("/", reviewH.Create)
-			reviews.GET("/", reviewH.GetAll)
-			reviews.GET("/:id", reviewH.GetById)
-			reviews.PUT("/:id", reviewH.Update)
-			reviews.DELETE("/:id", reviewH.Delete)
 		}
 	}
 }
