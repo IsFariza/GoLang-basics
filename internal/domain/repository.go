@@ -10,6 +10,7 @@ type GameRepo interface {
 	GetById(ctx context.Context, id string) (*Game, error)
 	Update(ctx context.Context, id string, updates *Game) error
 	Delete(ctx context.Context, id string) error
+	Approve(ctx context.Context, id string) error
 }
 
 type CompanyRepo interface {
@@ -29,6 +30,7 @@ type EmulationRepo interface {
 }
 
 type UserRepo interface {
+	GetByEmail(ctx context.Context, email string) (*User, error)
 	Create(ctx context.Context, user *User) error
 	GetAll(ctx context.Context) ([]*User, error)
 	GetById(ctx context.Context, id string) (*User, error)
