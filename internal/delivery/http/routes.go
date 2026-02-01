@@ -9,11 +9,11 @@ func RegisterRoutes(r *gin.Engine, gameH *GameHandler, companyH *CompanyHandler,
 		// Games API Group
 		games := api.Group("/games")
 		{
-			games.POST("/", gameH.Create)
+			// games.POST("/", gameH.Create)
 			games.GET("/", gameH.GetAll)
 			games.GET("/:id", gameH.GetById)
-			games.PUT("/:id", gameH.Update)
-			games.DELETE("/:id", gameH.Delete)
+			// games.PUT("/:id", gameH.Update)
+			// games.DELETE("/:id", gameH.Delete)
 		}
 
 		companies := api.Group("/companies")
@@ -45,9 +45,6 @@ func RegisterRoutes(r *gin.Engine, gameH *GameHandler, companyH *CompanyHandler,
 
 		api.POST("/signup", userH.SignUp)
 		api.POST("/login", userH.Login)
-
-		api.GET("/games", gameH.GetAll)
-		api.GET("/games/:id", gameH.GetById)
 
 		auth := api.Group("/", AuthMiddleware("user"))
 		{
