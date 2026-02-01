@@ -13,8 +13,12 @@ import (
 	delivery "github.com/BlackHole55/software-store-final/internal/delivery/http"
 	"github.com/BlackHole55/software-store-final/internal/repositories/mongodb"
 	"github.com/BlackHole55/software-store-final/internal/usecase"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/mongo/mongodriver"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	mongoV1 "go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func main() {
@@ -27,24 +31,34 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
+	router := gin.Default()
+
+	mongoURI := os.Getenv("MONGODB_URI")
+
+	clientV1, _ := mongoV1.Connect(context.TODO(), options.Client().ApplyURI(mongoURI))
+	sessionCollV1 := clientV1.Database("softwarestore").Collection("sessions")
+	store := mongodriver.NewStore(sessionCollV1, 3600, true, []byte("secret"))
+	router.Use(sessions.Sessions("mysession", store))
+
 	gameRepo := mongodb.NewGameRepository(client)
 	companyRepo := mongodb.NewCompanyRepository(client)
 	emulationRepo := mongodb.NewEmulationRepository(client)
+	userRepo := mongodb.NewUserRepository(client)
 
-	gameUC := usecase.NewGameUseCase(gameRepo, companyRepo)
+	gameUC := usecase.NewGameUseCase(gameRepo, companyRepo, emulationRepo)
 	companyUC := usecase.NewCompanyUsecase(companyRepo)
 	emulationUC := usecase.NewEmulationUsecase(emulationRepo)
+	userUC := usecase.NewUserUseCase(userRepo)
 
 	gameHandler := delivery.NewGameHandler(gameUC)
 	companyHandler := delivery.NewCompanyHandler(companyUC)
 	emulationHandler := delivery.NewEmulationHandler(emulationUC)
-
-	router := gin.Default()
+	userHandler := delivery.NewUserHandler(userUC)
 
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 
-	delivery.RegisterRoutes(router, gameHandler, companyHandler, emulationHandler)
+	delivery.RegisterRoutes(router, gameHandler, companyHandler, emulationHandler, userHandler)
 
 	port := "8080"
 	log.Printf("Server starting on port %s", port)

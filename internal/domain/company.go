@@ -12,6 +12,7 @@ type Company struct {
 	Description string        `bson:"description" json:"description"`
 	Country     string        `bson:"country" json:"country"`
 	Contacts    Contacts      `bson:"contacts" json:"contacts"`
+	IsVerified  bool          `bson:"is_verified" json:"is_verified"`
 	CreatedAt   time.Time     `bson:"created_at" json:"created_at"`
 	UpdatedAt   *time.Time    `bson:"updated_at" json:"updated_at"`
 }

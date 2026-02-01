@@ -51,8 +51,12 @@ func (h *GameHandler) GetById(c *gin.Context) {
 	id := c.Param("id")
 	game, err := h.usecase.GetById(c.Request.Context(), id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-		return
+		if errors.Is(err, domain.ErrorNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
 	}
 
 	c.JSON(http.StatusOK, game)
@@ -97,4 +101,15 @@ func (h *GameHandler) Delete(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Game deleted"})
+}
+
+func (h *GameHandler) Approve(c *gin.Context) {
+	id := c.Param("id")
+	err := h.usecase.Approve(c.Request.Context(), id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Game approved successfully"})
 }
