@@ -43,5 +43,28 @@ func RegisterRoutes(r *gin.Engine, gameH *GameHandler, companyH *CompanyHandler,
 			users.DELETE("/:id", userH.Delete)
 		}
 
+		api.POST("/signup", userH.SignUp)
+		api.POST("/login", userH.Login)
+
+		api.GET("/games", gameH.GetAll)
+		api.GET("/games/:id", gameH.GetById)
+
+		auth := api.Group("/", AuthMiddleware("user"))
+		{
+			auth.POST("/games", gameH.Create)
+			auth.PUT("/games/:id", gameH.Update)
+			auth.DELETE("/games/:id", gameH.Delete)
+
+			auth.POST("/companies", companyH.Create)
+			auth.POST("/emulations", emulationH.Create)
+
+			admin := auth.Group("/admin", AuthMiddleware("admin"))
+			{
+				admin.PATCH("/games/:id/approve", gameH.Approve)
+
+				admin.GET("/users", userH.GetAll)
+				admin.DELETE("/users/:id", userH.Delete)
+			}
+		}
 	}
 }
