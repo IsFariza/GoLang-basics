@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/BlackHole55/software-store-final/internal/domain"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,6 +17,59 @@ func NewUserHandler(usecase domain.UserUC) *UserHandler {
 	return &UserHandler{
 		usecase: usecase,
 	}
+}
+
+func (h *UserHandler) SignUp(c *gin.Context) {
+	type signUpData struct {
+		Username string `json:"username" binding:"required"`
+		Email    string `json:"email" binding:"required,email"`
+		Password string `json:"password" binding:"required,min=6"`
+	}
+
+	var input signUpData
+
+	user := &domain.User{
+		Username: input.Username,
+		Email:    input.Email,
+		Role:     "user",
+	}
+
+	if err := h.usecase.SignUp(c.Request.Context(), user, input.Password); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Registration successful"})
+}
+
+func (h *UserHandler) Login(c *gin.Context) {
+	var input struct {
+		Email    string `json:"email" binding:"required,email"`
+		Password string `json:"password" binding:"required"`
+	}
+
+	if err := c.ShouldBindBodyWithJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := h.usecase.Login(c.Request.Context(), input.Email, input.Password)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid login data"})
+		return
+	}
+
+	session := sessions.Default(c)
+
+	session.Set("userID", user.ID.Hex())
+	session.Set("role", user.Role)
+
+	if err := session.Save(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Logged in successfully"})
 }
 
 func (h *UserHandler) Create(c *gin.Context) {
