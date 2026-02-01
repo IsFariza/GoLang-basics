@@ -99,3 +99,7 @@ func (uc *GameUseCase) Update(ctx context.Context, id string, updatedGame *domai
 func (uc *GameUseCase) Delete(ctx context.Context, id string) error {
 	return uc.repo.Delete(ctx, id)
 }
+
+func (uc *GameUseCase) Approve(ctx context.Context, id string) error {
+	return uc.repo.Approve(ctx, id)
+}
