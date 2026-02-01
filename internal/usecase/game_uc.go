@@ -5,13 +5,14 @@ import (
 	"time"
 
 	"github.com/BlackHole55/software-store-final/internal/domain"
+	"golang.org/x/sync/errgroup"
 )
 
 type GameUseCase struct {
 	repo          domain.GameRepo
 	companyRepo   domain.CompanyRepo
 	emulationRepo domain.EmulationRepo
-	reviewRepo  domain.ReviewRepo
+	reviewRepo    domain.ReviewRepo
 }
 
 func NewGameUseCase(repo domain.GameRepo, companyRepo domain.CompanyRepo, emulationRepo domain.EmulationRepo, reviewRepo domain.ReviewRepo) *GameUseCase {
@@ -19,7 +20,7 @@ func NewGameUseCase(repo domain.GameRepo, companyRepo domain.CompanyRepo, emulat
 		repo:          repo,
 		companyRepo:   companyRepo,
 		emulationRepo: emulationRepo,
-		reviewRepo: reviewRepo,
+		reviewRepo:    reviewRepo,
 	}
 }
 
@@ -47,8 +48,55 @@ func (uc *GameUseCase) GetAll(ctx context.Context) ([]*domain.Game, error) {
 	return uc.repo.GetAll(ctx)
 }
 
-func (uc *GameUseCase) GetById(ctx context.Context, id string) (*domain.Game, error) {
-	return uc.repo.GetById(ctx, id)
+func (uc *GameUseCase) GetById(ctx context.Context, id string) (*domain.PopulatedGame, error) {
+	game, err := uc.repo.GetById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	var publisher *domain.Company
+	var developer *domain.Company
+	var emulation *domain.Emulation
+
+	g, ctx := errgroup.WithContext(ctx)
+
+	g.Go(func() error {
+		var err error
+		publisher, err = uc.companyRepo.GetById(ctx, game.PublisherId.Hex())
+		return err
+	})
+
+	g.Go(func() error {
+		var err error
+		developer, err = uc.companyRepo.GetById(ctx, game.DeveloperId.Hex())
+		return err
+	})
+
+	// Ignore err because emulation is optional
+	g.Go(func() error {
+		emulation, _ = uc.emulationRepo.GetById(ctx, game.EmulationId.Hex())
+		return nil
+	})
+
+	if err := g.Wait(); err != nil {
+		return nil, err
+	}
+
+	return &domain.PopulatedGame{
+		ID:             game.ID,
+		Publisher:      publisher,
+		Developer:      developer,
+		Emulation:      emulation,
+		OriginalSystem: game.OriginalSystem,
+		Title:          game.Title,
+		Description:    game.Description,
+		ReleaseDate:    game.ReleaseDate,
+		Price:          game.Price,
+		IsVerified:     game.IsVerified,
+		Category:       game.Category,
+		CreatedAt:      game.CreatedAt,
+		UpdatedAt:      game.UpdatedAt,
+	}, nil
 }
 
 func (uc *GameUseCase) GetReviewsByGameId(ctx context.Context, gameId string) ([]*domain.Review, error) {
