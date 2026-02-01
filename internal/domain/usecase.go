@@ -8,6 +8,7 @@ type GameUC interface {
 	GetById(ctx context.Context, id string) (*Game, error)
 	Update(ctx context.Context, id string, updates *Game) error
 	Delete(ctx context.Context, id string) error
+	Approve(ctx context.Context, id string) error
 }
 
 type CompanyUC interface {
@@ -27,6 +28,8 @@ type EmulationUC interface {
 }
 
 type UserUC interface {
+	SignUp(ctx context.Context, user *User, password string) error
+	Login(ctx context.Context, username, password string) (*User, error)
 	Create(ctx context.Context, user *User) error
 	GetAll(ctx context.Context) ([]*User, error)
 	GetById(ctx context.Context, id string) (*User, error)
