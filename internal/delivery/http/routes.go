@@ -20,6 +20,8 @@ func RegisterRoutes(r *gin.Engine, gameH *GameHandler, companyH *CompanyHandler,
 		// Only for users
 		auth := api.Group("/", AuthMiddleware("user"))
 		{
+			auth.GET("/profile", userH.GetProfile)
+
 			games := auth.Group("/games")
 			{
 				games.POST("/", gameH.Create)
