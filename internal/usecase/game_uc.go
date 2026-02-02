@@ -132,6 +132,15 @@ func (uc *GameUseCase) Update(ctx context.Context, id string, updatedGame *domai
 		existingGame.DeveloperId = updatedGame.DeveloperId
 	}
 
+	if !updatedGame.EmulationId.IsZero() {
+		_, err := uc.emulationRepo.GetById(ctx, updatedGame.EmulationId.Hex())
+		if err != nil {
+			return domain.ErrorInvalidEmulator
+		}
+
+		existingGame.EmulationId = updatedGame.EmulationId
+	}
+
 	if updatedGame.Title != "" {
 		existingGame.Title = updatedGame.Title
 	}
