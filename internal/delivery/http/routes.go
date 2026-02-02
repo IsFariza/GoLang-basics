@@ -15,6 +15,7 @@ func RegisterRoutes(r *gin.Engine, gameH *GameHandler, companyH *CompanyHandler,
 		api.GET("/companies/:id", companyH.GetById)
 		api.GET("/emulations", emulationH.GetAll)
 		api.GET("/emulations/:id", emulationH.GetById)
+		api.GET("/users/:id", userH.GetById)
 
 		// Only for users
 		auth := api.Group("/", AuthMiddleware("user"))
