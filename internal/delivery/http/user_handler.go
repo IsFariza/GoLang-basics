@@ -37,6 +37,7 @@ func (h *UserHandler) SignUp(c *gin.Context) {
 		Username: input.Username,
 		Email:    input.Email,
 		Role:     "user",
+		Library:  []domain.UserGame{},
 	}
 
 	if err := h.usecase.SignUp(c.Request.Context(), user, input.Password); err != nil {
