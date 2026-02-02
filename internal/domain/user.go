@@ -14,10 +14,10 @@ type User struct {
 	Role         string        `bson:"role,omitempty" json:"role"`
 	CreatedAt    time.Time     `bson:"created_at" json:"created_at"`
 	UpdatedAt    *time.Time    `bson:"updated_at" json:"updated_at"`
-	Library      Library       `bson:"library" json:"library"`
+	Library      []UserGame    `bson:"library" json:"library"`
 }
 
-type Library struct {
+type UserGame struct {
 	GameId        bson.ObjectID `bson:"game_id" json:"game_id"`
 	AddedAt       time.Time     `bson:"added_at" json:"added_at"`
 	PlaytimeHours float32       `bson:"playtime_hours" json:"playtime_hours"`
