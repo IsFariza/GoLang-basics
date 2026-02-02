@@ -142,3 +142,22 @@ func (h *UserHandler) Delete(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "User deleted"})
 }
+
+func (h *UserHandler) GetProfile(c *gin.Context) {
+	session := sessions.Default(c)
+	ctx := c.Request.Context()
+
+	userID := session.Get("userID")
+	if userID == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	user, err := h.usecase.GetById(ctx, userID.(string))
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
+}
