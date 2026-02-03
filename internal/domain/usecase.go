@@ -9,7 +9,7 @@ type GameUC interface {
 	GetReviewsByGameId(ctx context.Context, id string) ([]*Review, error)
 	Update(ctx context.Context, id string, updates *Game) error
 	Delete(ctx context.Context, id string) error
-	Approve(ctx context.Context, id string) error
+	VerifySwitch(ctx context.Context, id string) error
 }
 
 type CompanyUC interface {

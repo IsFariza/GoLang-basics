@@ -168,6 +168,15 @@ func (uc *GameUseCase) Delete(ctx context.Context, id string) error {
 	return uc.repo.Delete(ctx, id)
 }
 
-func (uc *GameUseCase) Approve(ctx context.Context, id string) error {
-	return uc.repo.Approve(ctx, id)
+func (uc *GameUseCase) VerifySwitch(ctx context.Context, id string) error {
+	game, err := uc.repo.GetById(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if game.IsVerified {
+		return uc.repo.Unverify(ctx, id)
+	}
+
+	return uc.repo.Verify(ctx, id)
 }
