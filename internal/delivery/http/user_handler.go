@@ -80,13 +80,13 @@ func (h *UserHandler) Login(c *gin.Context) {
 
 func (h *UserHandler) GetAll(c *gin.Context) {
 	ctx := c.Request.Context()
-	companies, err := h.usecase.GetAll(ctx)
+	users, err := h.usecase.GetAll(ctx)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, companies)
+	c.JSON(http.StatusOK, users)
 }
 
 func (h *UserHandler) GetById(c *gin.Context) {
