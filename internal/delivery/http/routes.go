@@ -26,6 +26,7 @@ func RegisterRoutes(r *gin.Engine, gameH *GameHandler, companyH *CompanyHandler,
 
 			games := auth.Group("/games")
 			{
+				games.GET("/my-uploads", gameH.GetByUserId)
 				games.POST("/", gameH.Create)
 				games.PUT("/:id", gameH.Update)
 				games.DELETE("/:id", gameH.Delete)

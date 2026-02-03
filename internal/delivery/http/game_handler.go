@@ -76,6 +76,20 @@ func (h *GameHandler) GetById(c *gin.Context) {
 	c.JSON(http.StatusOK, game)
 }
 
+// Get api/v1/games/my-uploads
+func (h *GameHandler) GetByUserId(c *gin.Context) {
+	session := sessions.Default(c)
+	userID := session.Get("userID")
+
+	games, err := h.usecase.GetByUserId(c.Request.Context(), userID.(string))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, games)
+}
+
 // PUT api/v1/games/:id
 func (h *GameHandler) Update(c *gin.Context) {
 	session := sessions.Default(c)

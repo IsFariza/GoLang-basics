@@ -123,6 +123,10 @@ func (uc *GameUseCase) GetById(ctx context.Context, id string) (*domain.Populate
 	}, nil
 }
 
+func (uc *GameUseCase) GetByUserId(ctx context.Context, userId string) ([]*domain.Game, error) {
+	return uc.repo.GetByUserId(ctx, userId)
+}
+
 func (uc *GameUseCase) GetReviewsByGameId(ctx context.Context, gameId string) ([]*domain.Review, error) {
 	_, err := uc.repo.GetById(ctx, gameId)
 	if err != nil {

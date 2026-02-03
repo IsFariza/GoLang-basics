@@ -9,6 +9,7 @@ type GameUC interface {
 	GetAll(ctx context.Context) ([]*Game, error)
 	GetAllVerified(ctx context.Context) ([]*Game, error)
 	GetById(ctx context.Context, id string) (*PopulatedGame, error)
+	GetByUserId(ctx context.Context, userId string) ([]*Game, error)
 	GetReviewsByGameId(ctx context.Context, id string) ([]*Review, error)
 	Update(ctx context.Context, id string, updates *Game, userId, userRole string) error
 	Delete(ctx context.Context, id string) error

@@ -77,6 +77,25 @@ func (r *GameRepository) GetById(ctx context.Context, id string) (*domain.Game, 
 	return &game, err
 }
 
+func (r *GameRepository) GetByUserId(ctx context.Context, userId string) ([]*domain.Game, error) {
+	var games []*domain.Game
+
+	objID, err := bson.ObjectIDFromHex(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.M{"user_id": objID}
+	cursor, err := r.collection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	err = cursor.All(ctx, &games)
+	return games, err
+}
+
 func (r *GameRepository) Update(ctx context.Context, id string, updatedGame *domain.Game) error {
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {

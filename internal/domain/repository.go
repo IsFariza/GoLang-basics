@@ -9,6 +9,7 @@ type GameRepo interface {
 	GetAll(ctx context.Context) ([]*Game, error)
 	GetAllVerified(ctx context.Context) ([]*Game, error)
 	GetById(ctx context.Context, id string) (*Game, error)
+	GetByUserId(ctx context.Context, userId string) ([]*Game, error)
 	Update(ctx context.Context, id string, updates *Game) error
 	Delete(ctx context.Context, id string) error
 	Verify(ctx context.Context, id string) error
