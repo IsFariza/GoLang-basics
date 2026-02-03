@@ -115,13 +115,14 @@ func (h *GameHandler) Delete(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Game deleted"})
 }
 
-func (h *GameHandler) Approve(c *gin.Context) {
+// PATCH api/v1/admin/games/:id/verify
+func (h *GameHandler) VerifySwitch(c *gin.Context) {
 	id := c.Param("id")
-	err := h.usecase.Approve(c.Request.Context(), id)
+	err := h.usecase.VerifySwitch(c.Request.Context(), id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Game approved successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Game verified/unverified successfully"})
 }
