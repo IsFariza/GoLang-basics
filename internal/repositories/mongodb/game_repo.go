@@ -43,6 +43,21 @@ func (r *GameRepository) GetAll(ctx context.Context) ([]*domain.Game, error) {
 	return games, err
 }
 
+func (r *GameRepository) GetAllVerified(ctx context.Context) ([]*domain.Game, error) {
+	var games []*domain.Game
+
+	filter := bson.M{"is_verified": true}
+	cursor, err := r.collection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	err = cursor.All(ctx, &games)
+	return games, err
+
+}
+
 func (r *GameRepository) GetById(ctx context.Context, id string) (*domain.Game, error) {
 	var game domain.Game
 

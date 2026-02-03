@@ -50,6 +50,16 @@ func (h *GameHandler) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, games)
 }
 
+func (h *GameHandler) GetAllVerified(c *gin.Context) {
+	games, err := h.usecase.GetAllVerified(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, games)
+}
+
 // GET api/v1/games/:id
 func (h *GameHandler) GetById(c *gin.Context) {
 	id := c.Param("id")
