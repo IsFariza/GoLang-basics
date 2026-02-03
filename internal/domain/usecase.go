@@ -2,6 +2,8 @@ package domain
 
 import (
 	"context"
+
+	"github.com/BlackHole55/software-store-final/internal/delivery/dto"
 )
 
 type GameUC interface {
@@ -15,6 +17,7 @@ type GameUC interface {
 	Delete(ctx context.Context, id string) error
 	VerifySwitch(ctx context.Context, id string) error
 	SearchByTitle(ctx context.Context, title string) ([]*Game, error)
+	GetUserLibraryWithDetails(ctx context.Context, userId string) ([]dto.UserLibraryItemDTO, error)
 }
 
 type CompanyUC interface {

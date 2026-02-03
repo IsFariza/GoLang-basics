@@ -171,3 +171,17 @@ func (h *GameHandler) SearchByTitle(c *gin.Context) {
 
 	c.JSON(http.StatusOK, results)
 }
+
+func (h *GameHandler) GetUserLibraryWithDetails(c *gin.Context) {
+	session := sessions.Default(c)
+	userID := session.Get("userID")
+
+	libraryGames, err := h.usecase.GetUserLibraryWithDetails(c.Request.Context(), userID.(string))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, libraryGames)
+
+}

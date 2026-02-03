@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/BlackHole55/software-store-final/internal/delivery/dto"
 	"github.com/BlackHole55/software-store-final/internal/domain"
 	"golang.org/x/sync/errgroup"
 )
@@ -219,4 +220,46 @@ func (uc *GameUseCase) SearchByTitle(ctx context.Context, title string) ([]*doma
 		return nil, err
 	}
 	return games, nil
+}
+
+func (uc *GameUseCase) GetUserLibraryWithDetails(ctx context.Context, userId string) ([]dto.UserLibraryItemDTO, error) {
+	user, err := uc.userRepo.GetById(ctx, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	gameIDs := []string{}
+	for _, item := range user.Library {
+		gameIDs = append(gameIDs, item.GameId.Hex())
+	}
+
+	games, err := uc.repo.GetByIds(ctx, gameIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create a map for quick game lookup by ID
+	gameMap := make(map[string]domain.Game)
+	for _, g := range games {
+		gameMap[g.ID.Hex()] = g
+	}
+
+	result := []dto.UserLibraryItemDTO{}
+	for _, libItem := range user.Library {
+		gameIdStr := libItem.GameId.Hex()
+
+		gameName := "Unkown Game"
+		if g, found := gameMap[gameIdStr]; found {
+			gameName = g.Title
+		}
+
+		result = append(result, dto.UserLibraryItemDTO{
+			GameId:        gameIdStr,
+			Title:         gameName,
+			AddedAt:       libItem.AddedAt,
+			PlaytimeHours: libItem.PlaytimeHours,
+		})
+	}
+
+	return result, nil
 }
