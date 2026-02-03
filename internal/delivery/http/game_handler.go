@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/BlackHole55/software-store-final/internal/domain"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,13 +21,16 @@ func NewGameHandler(usecase domain.GameUC) *GameHandler {
 
 // POST api/v1/games
 func (h *GameHandler) Create(c *gin.Context) {
+	session := sessions.Default(c)
+
+	userID := session.Get("userID")
 	var game domain.Game
 	if err := c.ShouldBindJSON(&game); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	err := h.usecase.Create(c.Request.Context(), &game)
+	err := h.usecase.Create(c.Request.Context(), &game, userID.(string))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -64,6 +68,10 @@ func (h *GameHandler) GetById(c *gin.Context) {
 
 // PUT api/v1/games/:id
 func (h *GameHandler) Update(c *gin.Context) {
+	session := sessions.Default(c)
+	currentUserID := session.Get("userID").(string)
+	currentUserRole := session.Get("role").(string)
+
 	id := c.Param("id")
 	var game domain.Game
 
@@ -72,15 +80,16 @@ func (h *GameHandler) Update(c *gin.Context) {
 		return
 	}
 
-	err := h.usecase.Update(c.Request.Context(), id, &game)
+	err := h.usecase.Update(c.Request.Context(), id, &game, currentUserID, currentUserRole)
 	if err != nil {
 		if errors.Is(err, domain.ErrorNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Game not found"})
+		} else if err.Error() == "permission denied: you are not the owner of this game" {
+			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		}
 		return
-
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Game updated successfully"})
