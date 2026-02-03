@@ -78,6 +78,24 @@ func (h *UserHandler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Logged in successfully", "role": user.Role})
 }
 
+func (h *UserHandler) Logout(c *gin.Context) {
+	session := sessions.Default(c)
+	session.Clear()
+
+	// Set the MaxAge to -1 to tell the browser to delete the cookie immediately
+	session.Options(sessions.Options{
+		MaxAge: -1,
+		Path:   "/",
+	})
+
+	if err := session.Save(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to logout"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
+}
+
 func (h *UserHandler) GetAll(c *gin.Context) {
 	ctx := c.Request.Context()
 	users, err := h.usecase.GetAll(ctx)
