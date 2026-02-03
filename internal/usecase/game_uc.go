@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/BlackHole55/software-store-final/internal/domain"
@@ -13,18 +14,21 @@ type GameUseCase struct {
 	companyRepo   domain.CompanyRepo
 	emulationRepo domain.EmulationRepo
 	reviewRepo    domain.ReviewRepo
+	userRepo      domain.UserRepo
 }
 
-func NewGameUseCase(repo domain.GameRepo, companyRepo domain.CompanyRepo, emulationRepo domain.EmulationRepo, reviewRepo domain.ReviewRepo) *GameUseCase {
+func NewGameUseCase(repo domain.GameRepo, companyRepo domain.CompanyRepo, emulationRepo domain.EmulationRepo, reviewRepo domain.ReviewRepo, userRepo domain.UserRepo) *GameUseCase {
 	return &GameUseCase{
 		repo:          repo,
 		companyRepo:   companyRepo,
 		emulationRepo: emulationRepo,
 		reviewRepo:    reviewRepo,
+		userRepo:      userRepo,
 	}
 }
 
-func (uc *GameUseCase) Create(ctx context.Context, game *domain.Game) error {
+func (uc *GameUseCase) Create(ctx context.Context, game *domain.Game, userId string) error {
+	// TODO add goroutins
 	if _, err := uc.companyRepo.GetById(ctx, game.PublisherId.Hex()); err != nil {
 		return domain.ErrorInvalidPublisher
 	}
@@ -41,7 +45,7 @@ func (uc *GameUseCase) Create(ctx context.Context, game *domain.Game) error {
 
 	game.CreatedAt = time.Now()
 
-	return uc.repo.Create(ctx, game)
+	return uc.repo.Create(ctx, game, userId)
 }
 
 func (uc *GameUseCase) GetAll(ctx context.Context) ([]*domain.Game, error) {
@@ -108,10 +112,14 @@ func (uc *GameUseCase) GetReviewsByGameId(ctx context.Context, gameId string) ([
 	return uc.reviewRepo.GetReviewsByGameId(ctx, gameId)
 }
 
-func (uc *GameUseCase) Update(ctx context.Context, id string, updatedGame *domain.Game) error {
+func (uc *GameUseCase) Update(ctx context.Context, id string, updatedGame *domain.Game, userId, userRole string) error {
 	existingGame, err := uc.repo.GetById(ctx, id)
 	if err != nil {
 		return err
+	}
+
+	if userRole != "admin" && existingGame.UserId.Hex() != userId {
+		return errors.New("permission denied: you are not the owner of this game")
 	}
 
 	if !updatedGame.PublisherId.IsZero() {
