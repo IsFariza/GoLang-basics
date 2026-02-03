@@ -52,6 +52,10 @@ func (uc *GameUseCase) GetAll(ctx context.Context) ([]*domain.Game, error) {
 	return uc.repo.GetAll(ctx)
 }
 
+func (uc *GameUseCase) GetAllVerified(ctx context.Context) ([]*domain.Game, error) {
+	return uc.repo.GetAllVerified(ctx)
+}
+
 func (uc *GameUseCase) GetById(ctx context.Context, id string) (*domain.PopulatedGame, error) {
 	game, err := uc.repo.GetById(ctx, id)
 	if err != nil {

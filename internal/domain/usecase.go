@@ -5,6 +5,7 @@ import "context"
 type GameUC interface {
 	Create(ctx context.Context, game *Game, id string) error
 	GetAll(ctx context.Context) ([]*Game, error)
+	GetAllVerified(ctx context.Context) ([]*Game, error)
 	GetById(ctx context.Context, id string) (*PopulatedGame, error)
 	GetReviewsByGameId(ctx context.Context, id string) ([]*Review, error)
 	Update(ctx context.Context, id string, updates *Game, userId, userRole string) error
