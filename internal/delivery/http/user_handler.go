@@ -75,7 +75,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Logged in successfully", "role": user.Role})
+	c.JSON(http.StatusOK, gin.H{"message": "Logged in successfully", "role": user.Role, "userID": user.ID})
 }
 
 func (h *UserHandler) Logout(c *gin.Context) {
