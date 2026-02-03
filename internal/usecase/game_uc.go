@@ -28,19 +28,35 @@ func NewGameUseCase(repo domain.GameRepo, companyRepo domain.CompanyRepo, emulat
 }
 
 func (uc *GameUseCase) Create(ctx context.Context, game *domain.Game, userId string) error {
-	// TODO add goroutins
-	if _, err := uc.companyRepo.GetById(ctx, game.PublisherId.Hex()); err != nil {
-		return domain.ErrorInvalidPublisher
-	}
+	g, ctx := errgroup.WithContext(ctx)
 
-	if _, err := uc.companyRepo.GetById(ctx, game.DeveloperId.Hex()); err != nil {
-		return domain.ErrorInvalidDeveloper
-	}
+	g.Go(func() error {
+		var err error
+		_, err = uc.companyRepo.GetById(ctx, game.PublisherId.Hex())
+		if err != nil {
+			return domain.ErrorInvalidPublisher
+		}
+		return nil
+	})
+
+	g.Go(func() error {
+		var err error
+		_, err = uc.companyRepo.GetById(ctx, game.DeveloperId.Hex())
+		if err != nil {
+			return domain.ErrorInvalidDeveloper
+		}
+		return nil
+	})
 
 	if !game.EmulationId.IsZero() {
-		if _, err := uc.emulationRepo.GetById(ctx, game.EmulationId.Hex()); err != nil {
-			return domain.ErrorInvalidEmulator
-		}
+		g.Go(func() error {
+			var err error
+			_, err = uc.emulationRepo.GetById(ctx, game.EmulationId.Hex())
+			if err != nil {
+				return domain.ErrorInvalidEmulator
+			}
+			return nil
+		})
 	}
 
 	game.CreatedAt = time.Now()
