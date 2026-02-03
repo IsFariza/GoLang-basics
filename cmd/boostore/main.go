@@ -47,7 +47,7 @@ func main() {
 	reviewRepo := mongodb.NewReviewRepository(client)
 	purchaseRepo := mongodb.NewPurchaseRepo(client)
 
-	gameUC := usecase.NewGameUseCase(gameRepo, companyRepo, emulationRepo, reviewRepo)
+	gameUC := usecase.NewGameUseCase(gameRepo, companyRepo, emulationRepo, reviewRepo, userRepo)
 	companyUC := usecase.NewCompanyUsecase(companyRepo)
 	emulationUC := usecase.NewEmulationUsecase(emulationRepo)
 	userUC := usecase.NewUserUseCase(userRepo)
