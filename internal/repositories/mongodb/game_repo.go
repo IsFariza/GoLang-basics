@@ -18,8 +18,14 @@ func NewGameRepository(client *mongo.Client) *GameRepository {
 	}
 }
 
-func (r *GameRepository) Create(ctx context.Context, game *domain.Game) error {
-	_, err := r.collection.InsertOne(ctx, game)
+func (r *GameRepository) Create(ctx context.Context, game *domain.Game, id string) error {
+	objID, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+	game.UserId = objID
+
+	_, err = r.collection.InsertOne(ctx, game)
 
 	return err
 }

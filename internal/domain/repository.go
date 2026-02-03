@@ -5,7 +5,7 @@ import (
 )
 
 type GameRepo interface {
-	Create(ctx context.Context, game *Game) error
+	Create(ctx context.Context, game *Game, id string) error
 	GetAll(ctx context.Context) ([]*Game, error)
 	GetById(ctx context.Context, id string) (*Game, error)
 	Update(ctx context.Context, id string, updates *Game) error

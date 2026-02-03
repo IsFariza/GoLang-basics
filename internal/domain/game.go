@@ -11,6 +11,7 @@ type Game struct {
 	PublisherId    bson.ObjectID `bson:"publisher_id" json:"publisher_id" binding:"required"`
 	DeveloperId    bson.ObjectID `bson:"developer_id" json:"developer_id" binding:"required"`
 	EmulationId    bson.ObjectID `bson:"emulation_id" json:"emulation_id"`
+	UserId         bson.ObjectID `bson:"user_id" json:"user_id"`
 	OriginalSystem string        `bson:"original_system" json:"original_system" binding:"omitempty,min=1,max=250"`
 	Title          string        `bson:"title" json:"title" binding:"required,min=2,max=100"`
 	Description    string        `bson:"description" json:"description" binding:"max=1000"`
