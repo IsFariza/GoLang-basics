@@ -62,7 +62,7 @@ func RegisterRoutes(r *gin.Engine, gameH *GameHandler, companyH *CompanyHandler,
 			// Only for admins
 			admin := auth.Group("/admin", AuthMiddleware("admin"))
 			{
-				admin.PATCH("/games/:id/approve", gameH.Approve)
+				admin.PATCH("/games/:id/verify", gameH.VerifySwitch)
 				admin.GET("/users", userH.GetAll)
 				admin.DELETE("/users/:id", userH.Delete)
 				admin.GET("/purchases", purchaseH.GetAll)
