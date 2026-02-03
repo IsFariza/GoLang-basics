@@ -149,3 +149,20 @@ func (r *GameRepository) Unverify(ctx context.Context, id string) error {
 	}
 	return nil
 }
+
+func (r *GameRepository) SearchByTitle(ctx context.Context, title string) ([]*domain.Game, error) {
+	var games []*domain.Game
+
+	filter := bson.M{"title": bson.M{"$regex": title, "$options": "i"}, "is_verified": true}
+	cursor, err := r.collection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	if err := cursor.All(ctx, &games); err != nil {
+		return nil, err
+	}
+
+	return games, nil
+}

@@ -192,3 +192,11 @@ func (uc *GameUseCase) VerifySwitch(ctx context.Context, id string) error {
 
 	return uc.repo.Verify(ctx, id)
 }
+
+func (uc *GameUseCase) SearchByTitle(ctx context.Context, title string) ([]*domain.Game, error) {
+	games, err := uc.repo.SearchByTitle(ctx, title)
+	if err != nil {
+		return nil, err
+	}
+	return games, nil
+}

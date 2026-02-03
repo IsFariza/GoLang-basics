@@ -13,6 +13,7 @@ type GameRepo interface {
 	Delete(ctx context.Context, id string) error
 	Verify(ctx context.Context, id string) error
 	Unverify(ctx context.Context, id string) error
+	SearchByTitle(ctx context.Context, title string) ([]*Game, error)
 }
 
 type CompanyRepo interface {

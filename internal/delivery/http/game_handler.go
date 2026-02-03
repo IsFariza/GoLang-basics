@@ -145,3 +145,15 @@ func (h *GameHandler) VerifySwitch(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Game verified/unverified successfully"})
 }
+
+func (h *GameHandler) SearchByTitle(c *gin.Context) {
+	searchTitle := c.Query("q")
+	results, err := h.usecase.SearchByTitle(c.Request.Context(), searchTitle)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to search games"})
+		return
+	}
+
+	c.JSON(http.StatusOK, results)
+}

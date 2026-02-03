@@ -1,6 +1,8 @@
 package domain
 
-import "context"
+import (
+	"context"
+)
 
 type GameUC interface {
 	Create(ctx context.Context, game *Game, id string) error
@@ -11,6 +13,7 @@ type GameUC interface {
 	Update(ctx context.Context, id string, updates *Game, userId, userRole string) error
 	Delete(ctx context.Context, id string) error
 	VerifySwitch(ctx context.Context, id string) error
+	SearchByTitle(ctx context.Context, title string) ([]*Game, error)
 }
 
 type CompanyUC interface {

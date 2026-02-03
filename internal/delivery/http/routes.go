@@ -11,6 +11,7 @@ func RegisterRoutes(r *gin.Engine, gameH *GameHandler, companyH *CompanyHandler,
 		api.GET("/games", gameH.GetAllVerified)
 		api.GET("/games/:id", gameH.GetById)
 		api.GET("/games/:id/reviews", gameH.GetReviewsByGameId)
+		api.GET("/games/search", gameH.SearchByTitle)
 		api.GET("/companies", companyH.GetAll)
 		api.GET("/companies/:id", companyH.GetById)
 		api.GET("/emulations", emulationH.GetAll)
