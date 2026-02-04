@@ -9,17 +9,47 @@ import (
 
 type PurchaseUsecase struct {
 	purchaseRepo domain.PurchaseRepo
+	userRepo     domain.UserRepo
 }
 
-func NewPurchaseUsecase(purchaseRepo domain.PurchaseRepo) *PurchaseUsecase {
+func NewPurchaseUsecase(purchaseRepo domain.PurchaseRepo, userRepo domain.UserRepo) *PurchaseUsecase {
 	return &PurchaseUsecase{
 		purchaseRepo: purchaseRepo,
+		userRepo:     userRepo,
 	}
 }
 
 func (uc *PurchaseUsecase) Create(ctx context.Context, purchase *domain.Purchase) error {
-	purchase.Payment.PaidAt = time.Now()
-	return uc.purchaseRepo.Create(ctx, purchase)
+	err := uc.purchaseRepo.Create(ctx, purchase)
+	if err != nil {
+		return err
+	}
+	user, err := uc.userRepo.GetById(ctx, purchase.UserId.Hex())
+	if err != nil {
+		return err
+	}
+	now := time.Now()
+	for _, item := range purchase.Items {
+		// Only add if the user doesn't already own it
+		isOwned := false
+		for _, libGame := range user.Library {
+			if libGame.GameId == item.GameId {
+				isOwned = true
+				break
+			}
+		}
+
+		if !isOwned {
+			user.Library = append(user.Library, domain.UserGame{
+				GameId:        item.GameId,
+				AddedAt:       now,
+				PlaytimeHours: 0,
+			})
+		}
+	}
+	return uc.userRepo.Update(ctx, user.ID.Hex(), user)
+	//purchase.Payment.PaidAt = time.Now()
+	//return uc.purchaseRepo.Create(ctx, purchase)
 }
 func (uc *PurchaseUsecase) GetAll(ctx context.Context) ([]*domain.Purchase, error) {
 	return uc.purchaseRepo.GetAll(ctx)

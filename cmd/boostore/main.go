@@ -52,7 +52,7 @@ func main() {
 	emulationUC := usecase.NewEmulationUsecase(emulationRepo)
 	userUC := usecase.NewUserUseCase(userRepo)
 	reviewUC := usecase.NewReviewUsecase(reviewRepo)
-	purchaseUC := usecase.NewPurchaseUsecase(purchaseRepo)
+	purchaseUC := usecase.NewPurchaseUsecase(purchaseRepo, userRepo)
 
 	gameHandler := delivery.NewGameHandler(gameUC)
 	companyHandler := delivery.NewCompanyHandler(companyUC)
