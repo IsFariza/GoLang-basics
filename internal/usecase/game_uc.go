@@ -189,6 +189,13 @@ func (uc *GameUseCase) Update(ctx context.Context, id string, updatedGame *domai
 	if updatedGame.Price != nil {
 		existingGame.Price = updatedGame.Price
 	}
+	if updatedGame.Category != nil {
+		existingGame.Category = updatedGame.Category
+	}
+
+	if updatedGame.OriginalSystem != "" {
+		existingGame.OriginalSystem = updatedGame.OriginalSystem
+	}
 
 	now := time.Now()
 	existingGame.UpdatedAt = &now
