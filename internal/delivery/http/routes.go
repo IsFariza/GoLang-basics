@@ -69,6 +69,7 @@ func RegisterRoutes(r *gin.Engine, gameH *GameHandler, companyH *CompanyHandler,
 				admin.PATCH("/games/:id/verify", gameH.VerifySwitch)
 				admin.DELETE("/games/:id/delete", gameH.Delete)
 				admin.GET("/games", gameH.GetAll)
+				admin.GET("/stats", gameH.GetStats)
 				admin.GET("/users", userH.GetAll)
 				admin.DELETE("/users/:id", userH.Delete)
 				admin.GET("/purchases", purchaseH.GetAll)

@@ -270,3 +270,7 @@ func (uc *GameUseCase) GetUserLibraryWithDetails(ctx context.Context, userId str
 
 	return result, nil
 }
+
+func (uc *GameUseCase) GetStats(ctx context.Context) (*dto.GameStatsDTO, error) {
+	return uc.repo.GetStats(ctx)
+}

@@ -2,6 +2,8 @@ package domain
 
 import (
 	"context"
+
+	"github.com/BlackHole55/software-store-final/internal/delivery/dto"
 )
 
 type GameRepo interface {
@@ -16,6 +18,7 @@ type GameRepo interface {
 	Verify(ctx context.Context, id string) error
 	Unverify(ctx context.Context, id string) error
 	SearchByTitle(ctx context.Context, title string) ([]*Game, error)
+	GetStats(ctx context.Context) (*dto.GameStatsDTO, error)
 }
 
 type CompanyRepo interface {

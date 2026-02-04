@@ -66,6 +66,10 @@ func main() {
 
 	delivery.RegisterRoutes(router, gameHandler, companyHandler, emulationHandler, userHandler, purchaseHandler, reviewHandler)
 
+	if err := gameRepo.InitIndices(ctx); err != nil {
+		log.Fatalf("Error initialization indices: %v", err)
+	}
+
 	port := "8080"
 	log.Printf("Server starting on port %s", port)
 
