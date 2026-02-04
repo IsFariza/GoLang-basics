@@ -50,8 +50,8 @@ type ReviewUC interface {
 	Create(ctx context.Context, reviews *Review) error
 	GetAll(ctx context.Context) ([]*Review, error)
 	GetById(ctx context.Context, id string) (*Review, error)
-	Update(ctx context.Context, id string, updates *Review) error
-	Delete(ctx context.Context, id string) error
+	Update(ctx context.Context, id string, currentUserID string, updates *Review) error
+	Delete(ctx context.Context, id string, userId string, userRole string) error
 }
 
 type PurchaseUC interface {
