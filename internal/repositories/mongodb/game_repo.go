@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/BlackHole55/software-store-final/internal/domain"
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -126,8 +127,23 @@ func (r *GameRepository) Update(ctx context.Context, id string, updatedGame *dom
 		return err
 	}
 
+	fmt.Printf("DEBUG: Categories received for update: %v\n", updatedGame.Category)
+
 	filter := bson.M{"_id": objID}
-	update := bson.M{"$set": updatedGame}
+	update := bson.M{
+		"$set": bson.M{
+			"title":           updatedGame.Title,
+			"description":     updatedGame.Description,
+			"price":           updatedGame.Price,
+			"original_system": updatedGame.OriginalSystem,
+			"publisher_id":    updatedGame.PublisherId,
+			"developer_id":    updatedGame.DeveloperId,
+			"emulation_id":    updatedGame.EmulationId,
+			"category":        updatedGame.Category,
+			"is_verified":     updatedGame.IsVerified,
+			"updated_at":      updatedGame.UpdatedAt,
+		},
+	}
 
 	res, err := r.collection.UpdateOne(ctx, filter, update)
 	if res.MatchedCount == 0 {
