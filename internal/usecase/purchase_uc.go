@@ -30,7 +30,6 @@ func (uc *PurchaseUsecase) Create(ctx context.Context, purchase *domain.Purchase
 	}
 	now := time.Now()
 	for _, item := range purchase.Items {
-		// Only add if the user doesn't already own it
 		isOwned := false
 		for _, libGame := range user.Library {
 			if libGame.GameId == item.GameId {
