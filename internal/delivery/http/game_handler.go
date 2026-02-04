@@ -185,3 +185,13 @@ func (h *GameHandler) GetUserLibraryWithDetails(c *gin.Context) {
 	c.JSON(http.StatusOK, libraryGames)
 
 }
+
+func (h *GameHandler) GetStats(c *gin.Context) {
+	result, err := h.usecase.GetStats(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}

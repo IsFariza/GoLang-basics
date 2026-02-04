@@ -3,6 +3,7 @@ package mongodb
 import (
 	"context"
 
+	"github.com/BlackHole55/software-store-final/internal/delivery/dto"
 	"github.com/BlackHole55/software-store-final/internal/domain"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -208,4 +209,46 @@ func (r *GameRepository) SearchByTitle(ctx context.Context, title string) ([]*do
 	}
 
 	return games, nil
+}
+
+func (r *GameRepository) GetStats(ctx context.Context) (*dto.GameStatsDTO, error) {
+	pipeline := mongo.Pipeline{
+		{
+			{Key: "$group", Value: bson.D{
+				{Key: "_id", Value: nil},
+				{Key: "total_games", Value: bson.D{{Key: "$sum", Value: 1}}},
+				{Key: "total_revenue", Value: bson.D{{Key: "$sum", Value: "$price"}}},
+				{Key: "avg_price", Value: bson.D{{Key: "$avg", Value: "$price"}}},
+				{Key: "min_price", Value: bson.D{{Key: "$min", Value: "$price"}}},
+				{Key: "max_price", Value: bson.D{{Key: "$max", Value: "$price"}}},
+			}},
+		},
+	}
+
+	cursor, err := r.collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var results []struct {
+		TotalGames   int     `bson:"total_games"`
+		TotalPrice   float64 `bson:"total_price"`
+		AvgGamePrice float64 `bson:"avg_price"`
+		MinGamePrice float64 `bson:"min_price"`
+		MaxGamePrice float64 `bson:"max_price"`
+	}
+
+	if err := cursor.All(ctx, &results); err != nil || len(results) == 0 {
+		return &dto.GameStatsDTO{}, err
+	}
+
+	res := results[0]
+	return &dto.GameStatsDTO{
+		TotalGames:   res.TotalGames,
+		TotalPrice:   res.TotalPrice,
+		AvgGamePrice: res.AvgGamePrice,
+		MinGamePrice: res.MinGamePrice,
+		MaxGamePrice: res.MaxGamePrice,
+	}, nil
 }

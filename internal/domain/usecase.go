@@ -18,6 +18,7 @@ type GameUC interface {
 	VerifySwitch(ctx context.Context, id string) error
 	SearchByTitle(ctx context.Context, title string) ([]*Game, error)
 	GetUserLibraryWithDetails(ctx context.Context, userId string) ([]dto.UserLibraryItemDTO, error)
+	GetStats(ctx context.Context) (*dto.GameStatsDTO, error)
 }
 
 type CompanyUC interface {
