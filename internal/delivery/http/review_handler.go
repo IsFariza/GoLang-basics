@@ -25,10 +25,14 @@ func (h *ReviewHandler) Create(c *gin.Context) {
 	}
 
 	if err := h.usecase.Create(c.Request.Context(), &review); err != nil {
+		if err.Error() == "review denied: you must own the game to leave a review" {
+			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"message": "Review created successfully"})
+	c.JSON(http.StatusCreated, gin.H{"message": "Review submitted successfully"})
 }
 
 func (h *ReviewHandler) GetAll(c *gin.Context) {
@@ -60,13 +64,30 @@ func (h *ReviewHandler) Update(c *gin.Context) {
 	ctx := c.Request.Context()
 	id := c.Param("id")
 
-	var updates domain.Review
-	if err := c.ShouldBindJSON(&updates); err != nil {
+	userIdInterface, exists := c.Get("currentUserID")
+	if !exists || userIdInterface == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized: Please login"})
+		return
+	}
+	currentUserID, ok := userIdInterface.(string)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user context"})
+		return
+	}
+	var input struct {
+		Content string `json:"content" binding:"required"`
+		Rating  int    `json:"rating" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	updates := &domain.Review{
+		Content: input.Content,
+		Rating:  &input.Rating,
+	}
 
-	if err := h.usecase.Update(ctx, id, &updates); err != nil {
+	if err := h.usecase.Update(ctx, id, currentUserID, updates); err != nil {
 		if errors.Is(err, domain.ErrorNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Review not found"})
 		} else {
@@ -79,15 +100,36 @@ func (h *ReviewHandler) Update(c *gin.Context) {
 }
 func (h *ReviewHandler) Delete(c *gin.Context) {
 	id := c.Param("id")
+
+	userIdInterface, existsId := c.Get("currentUserID")
+	userRoleInterface, existsRole := c.Get("currentUserRole")
+
+	if !existsId || !existsRole || userIdInterface == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User session not found"})
+		return
+	}
+
+	userId, ok1 := userIdInterface.(string)
+	userRole, ok2 := userRoleInterface.(string)
+
+	if !ok1 {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid user ID format"})
+		return
+	}
+	if !ok2 {
+		userRole = "user"
+	}
+
 	ctx := c.Request.Context()
 
-	if err := h.usecase.Delete(ctx, id); err != nil {
+	if err := h.usecase.Delete(ctx, id, userId, userRole); err != nil {
 		if errors.Is(err, domain.ErrorNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Review not found"})
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		}
 		return
 	}
+
 	c.JSON(http.StatusOK, gin.H{"message": "Review deleted successfully"})
 }
