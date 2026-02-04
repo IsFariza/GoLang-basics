@@ -212,7 +212,7 @@ func (r *GameRepository) Unverify(ctx context.Context, id string) error {
 func (r *GameRepository) SearchByTitle(ctx context.Context, title string) ([]*domain.Game, error) {
 	var games []*domain.Game
 
-	filter := bson.M{"title": bson.M{"$regex": title, "$options": "i"}, "is_verified": true}
+	filter := bson.M{"is_verified": true, "title": bson.M{"$regex": title, "$options": "i"}}
 	cursor, err := r.collection.Find(ctx, filter)
 	if err != nil {
 		return nil, err
@@ -224,4 +224,17 @@ func (r *GameRepository) SearchByTitle(ctx context.Context, title string) ([]*do
 	}
 
 	return games, nil
+}
+
+func (r *GameRepository) InitIndices(ctx context.Context) error {
+	indices := []mongo.IndexModel{
+		{Keys: bson.D{{Key: "is_verified", Value: 1}, {Key: "title", Value: 1}}},
+
+		{Keys: bson.D{{Key: "user_id", Value: 1}}},
+
+		{Keys: bson.D{{Key: "is_verified", Value: 1}}},
+	}
+
+	_, err := r.collection.Indexes().CreateMany(ctx, indices)
+	return err
 }
