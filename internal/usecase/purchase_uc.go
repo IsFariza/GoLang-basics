@@ -47,8 +47,6 @@ func (uc *PurchaseUsecase) Create(ctx context.Context, purchase *domain.Purchase
 		}
 	}
 	return uc.userRepo.Update(ctx, user.ID.Hex(), user)
-	//purchase.Payment.PaidAt = time.Now()
-	//return uc.purchaseRepo.Create(ctx, purchase)
 }
 func (uc *PurchaseUsecase) GetAll(ctx context.Context) ([]*domain.Purchase, error) {
 	return uc.purchaseRepo.GetAll(ctx)
