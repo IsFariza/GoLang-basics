@@ -52,7 +52,7 @@ type ReviewRepo interface {
 	GetById(ctx context.Context, id string) (*Review, error)
 	GetReviewsByGameId(ctx context.Context, gameId string) ([]*Review, error)
 	Update(ctx context.Context, id string, updates *Review) error
-	Delete(ctx context.Context, id string) error
+	Delete(ctx context.Context, id string, userId string, userRole string) error
 }
 
 type PurchaseRepo interface {

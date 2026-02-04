@@ -79,7 +79,13 @@ func (r *ReviewRepository) Update(ctx context.Context, id string, updateReview *
 	}
 
 	filter := bson.M{"_id": objID}
-	update := bson.M{"$set": updateReview}
+	update := bson.M{
+		"$set": bson.M{
+			"content":    updateReview.Content,
+			"rating":     updateReview.Rating,
+			"updated_at": updateReview.UpdatedAt,
+		},
+	}
 
 	res, err := r.collection.UpdateOne(ctx, filter, update)
 	if res.MatchedCount == 0 {
@@ -88,7 +94,7 @@ func (r *ReviewRepository) Update(ctx context.Context, id string, updateReview *
 	return err
 }
 
-func (r *ReviewRepository) Delete(ctx context.Context, id string) error {
+func (r *ReviewRepository) Delete(ctx context.Context, id string, userId string, userRole string) error {
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return err
