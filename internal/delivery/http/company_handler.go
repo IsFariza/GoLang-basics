@@ -64,6 +64,17 @@ func (h *CompanyHandler) GetById(c *gin.Context) {
 	c.JSON(http.StatusOK, company)
 }
 
+func (h *CompanyHandler) GetVerified(c *gin.Context) {
+	ctx := c.Request.Context()
+	companies, err := h.usecase.GetVerified(ctx)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, companies)
+}
+
 func (h *CompanyHandler) Update(c *gin.Context) {
 	ctx := c.Request.Context()
 	id := c.Param("id")
@@ -85,6 +96,17 @@ func (h *CompanyHandler) Update(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Company updated"})
+}
+
+func (h *CompanyHandler) VerifySwitch(c *gin.Context) {
+	id := c.Param("id")
+	err := h.usecase.VerifySwitch(c.Request.Context(), id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Game verified/unverified successfully"})
 }
 
 func (h *CompanyHandler) Delete(c *gin.Context) {

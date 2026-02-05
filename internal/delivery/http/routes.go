@@ -36,6 +36,7 @@ func RegisterRoutes(r *gin.Engine, gameH *GameHandler, companyH *CompanyHandler,
 			companies := auth.Group("/companies")
 			{
 				companies.POST("/", companyH.Create)
+				companies.GET("/verified", companyH.GetVerified)
 				companies.PUT("/:id", companyH.Update)
 				companies.DELETE("/:id", companyH.Delete)
 			}
@@ -67,6 +68,7 @@ func RegisterRoutes(r *gin.Engine, gameH *GameHandler, companyH *CompanyHandler,
 			admin := auth.Group("/admin", AuthMiddleware("admin"))
 			{
 				admin.PATCH("/games/:id/verify", gameH.VerifySwitch)
+				admin.PATCH("/companies/:id/verify", companyH.VerifySwitch)
 				admin.DELETE("/games/:id/delete", gameH.Delete)
 				admin.GET("/games", gameH.GetAll)
 				admin.GET("/stats", gameH.GetStats)
