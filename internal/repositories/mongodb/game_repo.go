@@ -2,7 +2,6 @@ package mongodb
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/BlackHole55/software-store-final/internal/delivery/dto"
 	"github.com/BlackHole55/software-store-final/internal/domain"
@@ -127,8 +126,6 @@ func (r *GameRepository) Update(ctx context.Context, id string, updatedGame *dom
 	if err != nil {
 		return err
 	}
-
-	fmt.Printf("DEBUG: Categories received for update: %v\n", updatedGame.Category)
 
 	filter := bson.M{"_id": objID}
 	update := bson.M{
