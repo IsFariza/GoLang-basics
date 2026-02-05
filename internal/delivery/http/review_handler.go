@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/BlackHole55/software-store-final/internal/domain"
-	"github.com/BlackHole55/software-store-final/internal/usecase"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,7 +12,7 @@ type ReviewHandler struct {
 	usecase domain.ReviewUC
 }
 
-func NewReviewHandler(usecase *usecase.ReviewUsecase) *ReviewHandler {
+func NewReviewHandler(usecase domain.ReviewUC) *ReviewHandler {
 	return &ReviewHandler{usecase: usecase}
 }
 
