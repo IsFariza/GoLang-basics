@@ -32,6 +32,23 @@ func (uc *CompanyUsecase) GetById(ctx context.Context, id string) (*domain.Compa
 	return uc.companyRepo.GetById(ctx, id)
 }
 
+func (uc *CompanyUsecase) GetVerified(ctx context.Context) ([]*domain.Company, error) {
+	return uc.companyRepo.GetVerified(ctx)
+}
+
+func (uc *CompanyUsecase) VerifySwitch(ctx context.Context, id string) error {
+	company, err := uc.companyRepo.GetById(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if company.IsVerified {
+		return uc.companyRepo.Unverify(ctx, id)
+	}
+
+	return uc.companyRepo.Verify(ctx, id)
+}
+
 func (uc *CompanyUsecase) Update(ctx context.Context, id string, updatedCompany *domain.Company) error {
 	existingCompany, err := uc.companyRepo.GetById(ctx, id)
 	if err != nil {
@@ -56,6 +73,10 @@ func (uc *CompanyUsecase) Update(ctx context.Context, id string, updatedCompany 
 
 	if updatedCompany.Contacts.Phone != "" {
 		existingCompany.Contacts.Phone = updatedCompany.Contacts.Phone
+	}
+
+	if updatedCompany.Contacts.Website != "" {
+		existingCompany.Contacts.Website = updatedCompany.Contacts.Website
 	}
 
 	now := time.Now()

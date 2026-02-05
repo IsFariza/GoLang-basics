@@ -25,6 +25,8 @@ type CompanyUC interface {
 	Create(ctx context.Context, company *Company) error
 	GetAll(ctx context.Context) ([]*Company, error)
 	GetById(ctx context.Context, id string) (*Company, error)
+	GetVerified(ctx context.Context) ([]*Company, error)
+	VerifySwitch(ctx context.Context, id string) error
 	Update(ctx context.Context, id string, updates *Company) error
 	Delete(ctx context.Context, id string) error
 }
