@@ -20,6 +20,11 @@ func NewUserUseCase(repo domain.UserRepo) *UserUseCase {
 }
 
 func (uc *UserUseCase) SignUp(ctx context.Context, user *domain.User, password string) error {
+	existingUser, err := uc.repo.GetByEmail(ctx, user.Email)
+	if existingUser != nil {
+		return errors.New("User with this email already exists")
+	}
+
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
