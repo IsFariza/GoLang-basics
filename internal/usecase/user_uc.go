@@ -81,3 +81,16 @@ func (uc *UserUseCase) Update(ctx context.Context, id string, updatedUser *domai
 func (uc *UserUseCase) Delete(ctx context.Context, id string) error {
 	return uc.repo.Delete(ctx, id)
 }
+
+func (uc *UserUseCase) RoleSwitch(ctx context.Context, id string) error {
+	user, err := uc.repo.GetById(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if user.Role != "moderator" {
+		return uc.repo.ChangeRoleToModerator(ctx, id)
+	}
+
+	return uc.repo.ChangeRoleToUser(ctx, id)
+}

@@ -102,3 +102,44 @@ func (r *UserRepository) Delete(ctx context.Context, id string) error {
 
 	return err
 }
+
+func (r *UserRepository) ChangeRoleToModerator(ctx context.Context, id string) error {
+	objID, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": objID}
+	update := bson.M{"$set": bson.M{"role": "moderator"}}
+
+	res, err := r.collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+
+	if res.MatchedCount == 0 {
+		return domain.ErrorNotFound
+	}
+	return nil
+
+}
+
+func (r *UserRepository) ChangeRoleToUser(ctx context.Context, id string) error {
+	objID, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": objID}
+	update := bson.M{"$set": bson.M{"role": "user"}}
+
+	res, err := r.collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+
+	if res.MatchedCount == 0 {
+		return domain.ErrorNotFound
+	}
+	return nil
+}

@@ -64,18 +64,25 @@ func RegisterRoutes(r *gin.Engine, gameH *GameHandler, companyH *CompanyHandler,
 				reviews.DELETE("/:id", reviewH.Delete)
 			}
 
+			// Only for moderators
+			moderator := auth.Group("/moderator", AuthMiddleware("moderator"))
+			{
+				moderator.PATCH("/games/:id/verify", gameH.VerifySwitch)
+				moderator.PATCH("/companies/:id/verify", companyH.VerifySwitch)
+				moderator.DELETE("/games/:id/delete", gameH.Delete)
+				moderator.GET("/games", gameH.GetAll)
+				moderator.GET("/stats", gameH.GetStats)
+				moderator.GET("/users", userH.GetAll)
+				moderator.DELETE("/users/:id", userH.Delete)
+				moderator.GET("/purchases", purchaseH.GetAll)
+			}
+
 			// Only for admins
 			admin := auth.Group("/admin", AuthMiddleware("admin"))
 			{
-				admin.PATCH("/games/:id/verify", gameH.VerifySwitch)
-				admin.PATCH("/companies/:id/verify", companyH.VerifySwitch)
-				admin.DELETE("/games/:id/delete", gameH.Delete)
-				admin.GET("/games", gameH.GetAll)
-				admin.GET("/stats", gameH.GetStats)
-				admin.GET("/users", userH.GetAll)
-				admin.DELETE("/users/:id", userH.Delete)
-				admin.GET("/purchases", purchaseH.GetAll)
+				admin.PATCH("/users/:id/roleSwitch", userH.RoleSwitch)
 			}
+
 		}
 	}
 }

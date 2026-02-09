@@ -180,3 +180,14 @@ func (h *UserHandler) GetProfile(c *gin.Context) {
 
 	c.JSON(http.StatusOK, user)
 }
+
+func (h *UserHandler) RoleSwitch(c *gin.Context) {
+	id := c.Param("id")
+	err := h.usecase.RoleSwitch(c.Request.Context(), id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "User role switched successfully"})
+}
