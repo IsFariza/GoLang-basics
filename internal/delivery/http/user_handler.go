@@ -183,7 +183,26 @@ func (h *UserHandler) GetProfile(c *gin.Context) {
 
 func (h *UserHandler) RoleSwitch(c *gin.Context) {
 	id := c.Param("id")
-	err := h.usecase.RoleSwitch(c.Request.Context(), id)
+	adminID, _ := c.Get("currentUserID")
+
+	targetUserID := c.Param("id")
+
+	if adminID == targetUserID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You cannot change your own role"})
+		return
+	}
+
+	targetUser, err := h.usecase.GetById(c.Request.Context(), targetUserID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	if targetUser.Role == "admin" {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You cannot change role of another admin"})
+		return
+	}
+	err = h.usecase.RoleSwitch(c.Request.Context(), id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

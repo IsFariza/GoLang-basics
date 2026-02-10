@@ -1,8 +1,6 @@
 package http
 
 import (
-	"net/http"
-
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
@@ -10,22 +8,25 @@ import (
 func AuthMiddleware(requiredRole string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		session := sessions.Default(c)
-		userID := session.Get("userID")
-		userRole := session.Get("role")
-		if userID == nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized. Please login."})
-			c.Abort()
+		role := session.Get("role")
+
+		if session.Get("userID") == nil {
+			c.AbortWithStatusJSON(401, gin.H{"error": "Unauthorized"})
 			return
 		}
 
-		if requiredRole == "admin" && userRole != "admin" {
-			c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden: Admin access only"})
-			c.Abort()
+		userRole := role.(string)
+
+		if userRole == "admin" {
+			c.Next()
 			return
 		}
 
-		c.Set("currentUserID", userID)
-		c.Set("currentUserRole", userRole)
+		if requiredRole == "moderator" && userRole != "moderator" {
+			c.AbortWithStatusJSON(403, gin.H{"error": "Moderator access only"})
+			return
+		}
+
 		c.Next()
 	}
 }
