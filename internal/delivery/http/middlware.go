@@ -9,12 +9,18 @@ func AuthMiddleware(requiredRole string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		session := sessions.Default(c)
 		role := session.Get("role")
+		userID := session.Get("userID")
 
-		if session.Get("userID") == nil {
+		if userID == nil {
 			c.AbortWithStatusJSON(401, gin.H{"error": "Unauthorized"})
 			return
 		}
-
+		c.Set("currentUserID", userID.(string))
+		if role != nil {
+			c.Set("currentUserRole", role.(string))
+		} else {
+			c.Set("currentUserRole", "user")
+		}
 		userRole := role.(string)
 
 		if userRole == "admin" {
