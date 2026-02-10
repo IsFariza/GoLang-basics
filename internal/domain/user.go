@@ -2,23 +2,21 @@ package domain
 
 import (
 	"time"
-
-	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 type User struct {
-	ID           bson.ObjectID `bson:"_id,omitempty" json:"_id"`
-	Username     string        `bson:"username" json:"username" binding:"required"`
-	Email        string        `bson:"email" json:"email" binding:"required,email"`
-	PasswordHash []byte        `bson:"password_hash" json:"-"`
-	Role         string        `bson:"role,omitempty" json:"role"`
-	CreatedAt    time.Time     `bson:"created_at" json:"created_at"`
-	UpdatedAt    *time.Time    `bson:"updated_at" json:"updated_at"`
-	Library      []UserGame    `bson:"library" json:"library"`
+	ID           string     `json:"_id"`
+	Username     string     `json:"username" binding:"required"`
+	Email        string     `json:"email" binding:"required,email"`
+	PasswordHash []byte     `json:"-"`
+	Role         string     `json:"role,omitempty"`
+	CreatedAt    time.Time  `json:"created_at"`
+	UpdatedAt    *time.Time `json:"updated_at"`
+	Library      []UserGame `json:"library"`
 }
 
 type UserGame struct {
-	GameId        bson.ObjectID `bson:"game_id" json:"game_id"`
-	AddedAt       time.Time     `bson:"added_at" json:"added_at"`
-	PlaytimeHours float32       `bson:"playtime_hours" json:"playtime_hours"`
+	GameId        string    `json:"game_id"`
+	AddedAt       time.Time `json:"added_at"`
+	PlaytimeHours float32   `json:"playtime_hours"`
 }

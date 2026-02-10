@@ -2,39 +2,37 @@ package domain
 
 import (
 	"time"
-
-	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 type Game struct {
-	ID             bson.ObjectID `bson:"_id,omitempty" json:"_id"`
-	PublisherId    bson.ObjectID `bson:"publisher_id" json:"publisher_id" binding:"required"`
-	DeveloperId    bson.ObjectID `bson:"developer_id" json:"developer_id" binding:"required"`
-	EmulationId    bson.ObjectID `bson:"emulation_id" json:"emulation_id"`
-	UserId         bson.ObjectID `bson:"user_id" json:"user_id"`
-	OriginalSystem string        `bson:"original_system" json:"original_system" binding:"omitempty,min=1,max=250"`
-	Title          string        `bson:"title" json:"title" binding:"required,min=2,max=100"`
-	Description    string        `bson:"description" json:"description" binding:"max=1000"`
-	ReleaseDate    *time.Time    `bson:"release_date" json:"release_date"`
-	Price          *float32      `bson:"price" json:"price" binding:"required,min=0"`
-	IsVerified     bool          `bson:"is_verified" json:"is_verified"`
-	Category       []string      `bson:"category" json:"category" binding:"omitempty,min=1,dive,min=1"`
-	CreatedAt      time.Time     `bson:"created_at" json:"created_at"`
-	UpdatedAt      *time.Time    `bson:"updated_at" json:"updated_at"`
+	ID             string     `json:"_id"`
+	PublisherId    string     `json:"publisher_id" binding:"required"`
+	DeveloperId    string     `json:"developer_id" binding:"required"`
+	EmulationId    string     `json:"emulation_id"`
+	UserId         string     `json:"user_id"`
+	OriginalSystem string     `json:"original_system" binding:"omitempty,min=1,max=250"`
+	Title          string     `json:"title" binding:"required,min=2,max=100"`
+	Description    string     `json:"description" binding:"max=1000"`
+	ReleaseDate    *time.Time `json:"release_date"`
+	Price          *float32   `json:"price" binding:"required,min=0"`
+	IsVerified     bool       `json:"is_verified"`
+	Category       []string   `json:"category" binding:"omitempty,min=1,dive,min=1"`
+	CreatedAt      time.Time  `json:"created_at"`
+	UpdatedAt      *time.Time `json:"updated_at"`
 }
 
 type PopulatedGame struct {
-	ID             bson.ObjectID `bson:"_id,omitempty" json:"_id"`
-	Publisher      *Company      `bson:"publisher" json:"publisher" binding:"required"`
-	Developer      *Company      `bson:"developer" json:"developer" binding:"required"`
-	Emulation      *Emulation    `bson:"emulation" json:"emulation"`
-	OriginalSystem string        `bson:"original_system" json:"original_system" binding:"omitempty,min=1,max=250"`
-	Title          string        `bson:"title" json:"title" binding:"required,min=2,max=100"`
-	Description    string        `bson:"description" json:"description" binding:"max=1000"`
-	ReleaseDate    *time.Time    `bson:"release_date" json:"release_date"`
-	Price          *float32      `bson:"price" json:"price" binding:"required,min=0"`
-	IsVerified     bool          `bson:"is_verified" json:"is_verified"`
-	Category       []string      `bson:"category" json:"category" binding:"omitempty,min=1,dive,min=1"`
-	CreatedAt      time.Time     `bson:"created_at" json:"created_at"`
-	UpdatedAt      *time.Time    `bson:"updated_at" json:"updated_at"`
+	ID             string     `json:"_id"`
+	Publisher      *Company   `json:"publisher"`
+	Developer      *Company   `json:"developer"`
+	Emulation      *Emulation `json:"emulation"`
+	OriginalSystem string     `json:"original_system"`
+	Title          string     `json:"title"`
+	Description    string     `json:"description"`
+	ReleaseDate    *time.Time `json:"release_date"`
+	Price          *float32   `json:"price"`
+	IsVerified     bool       `json:"is_verified"`
+	Category       []string   `json:"category"`
+	CreatedAt      time.Time  `json:"created_at"`
+	UpdatedAt      *time.Time `json:"updated_at"`
 }
