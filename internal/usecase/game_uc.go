@@ -33,7 +33,7 @@ func (uc *GameUseCase) Create(ctx context.Context, game *domain.Game, userId str
 
 	g.Go(func() error {
 		var err error
-		_, err = uc.companyRepo.GetById(ctx, game.PublisherId.Hex())
+		_, err = uc.companyRepo.GetById(ctx, game.PublisherId)
 		if err != nil {
 			return domain.ErrorInvalidPublisher
 		}
@@ -42,17 +42,17 @@ func (uc *GameUseCase) Create(ctx context.Context, game *domain.Game, userId str
 
 	g.Go(func() error {
 		var err error
-		_, err = uc.companyRepo.GetById(ctx, game.DeveloperId.Hex())
+		_, err = uc.companyRepo.GetById(ctx, game.DeveloperId)
 		if err != nil {
 			return domain.ErrorInvalidDeveloper
 		}
 		return nil
 	})
 
-	if !game.EmulationId.IsZero() {
+	if game.EmulationId != "" {
 		g.Go(func() error {
 			var err error
-			_, err = uc.emulationRepo.GetById(ctx, game.EmulationId.Hex())
+			_, err = uc.emulationRepo.GetById(ctx, game.EmulationId)
 			if err != nil {
 				return domain.ErrorInvalidEmulator
 			}
@@ -87,19 +87,19 @@ func (uc *GameUseCase) GetById(ctx context.Context, id string) (*domain.Populate
 
 	g.Go(func() error {
 		var err error
-		publisher, err = uc.companyRepo.GetById(ctx, game.PublisherId.Hex())
+		publisher, err = uc.companyRepo.GetById(ctx, game.PublisherId)
 		return err
 	})
 
 	g.Go(func() error {
 		var err error
-		developer, err = uc.companyRepo.GetById(ctx, game.DeveloperId.Hex())
+		developer, err = uc.companyRepo.GetById(ctx, game.DeveloperId)
 		return err
 	})
 
 	// Ignore err because emulation is optional
 	g.Go(func() error {
-		emulation, _ = uc.emulationRepo.GetById(ctx, game.EmulationId.Hex())
+		emulation, _ = uc.emulationRepo.GetById(ctx, game.EmulationId)
 		return nil
 	})
 
@@ -143,12 +143,12 @@ func (uc *GameUseCase) Update(ctx context.Context, id string, updatedGame *domai
 		return err
 	}
 
-	if userRole != "admin" && existingGame.UserId.Hex() != userId {
+	if userRole != "admin" && existingGame.UserId != userId {
 		return errors.New("permission denied: you are not the owner of this game")
 	}
 
-	if !updatedGame.PublisherId.IsZero() {
-		_, err := uc.companyRepo.GetById(ctx, updatedGame.PublisherId.Hex())
+	if updatedGame.PublisherId != "" {
+		_, err := uc.companyRepo.GetById(ctx, updatedGame.PublisherId)
 		if err != nil {
 			return domain.ErrorInvalidPublisher
 		}
@@ -156,8 +156,8 @@ func (uc *GameUseCase) Update(ctx context.Context, id string, updatedGame *domai
 		existingGame.PublisherId = updatedGame.PublisherId
 	}
 
-	if !updatedGame.DeveloperId.IsZero() {
-		_, err := uc.companyRepo.GetById(ctx, updatedGame.DeveloperId.Hex())
+	if updatedGame.DeveloperId != "" {
+		_, err := uc.companyRepo.GetById(ctx, updatedGame.DeveloperId)
 		if err != nil {
 			return domain.ErrorInvalidDeveloper
 		}
@@ -165,8 +165,8 @@ func (uc *GameUseCase) Update(ctx context.Context, id string, updatedGame *domai
 		existingGame.DeveloperId = updatedGame.DeveloperId
 	}
 
-	if !updatedGame.EmulationId.IsZero() {
-		_, err := uc.emulationRepo.GetById(ctx, updatedGame.EmulationId.Hex())
+	if updatedGame.EmulationId != "" {
+		_, err := uc.emulationRepo.GetById(ctx, updatedGame.EmulationId)
 		if err != nil {
 			return domain.ErrorInvalidEmulator
 		}
@@ -237,7 +237,7 @@ func (uc *GameUseCase) GetUserLibraryWithDetails(ctx context.Context, userId str
 
 	gameIDs := []string{}
 	for _, item := range user.Library {
-		gameIDs = append(gameIDs, item.GameId.Hex())
+		gameIDs = append(gameIDs, item.GameId)
 	}
 
 	games, err := uc.repo.GetByIds(ctx, gameIDs)
@@ -248,12 +248,12 @@ func (uc *GameUseCase) GetUserLibraryWithDetails(ctx context.Context, userId str
 	// Create a map for quick game lookup by ID
 	gameMap := make(map[string]domain.Game)
 	for _, g := range games {
-		gameMap[g.ID.Hex()] = g
+		gameMap[g.ID] = g
 	}
 
 	result := []dto.UserLibraryItemDTO{}
 	for _, libItem := range user.Library {
-		gameIdStr := libItem.GameId.Hex()
+		gameIdStr := libItem.GameId
 
 		gameName := "Unkown Game"
 		if g, found := gameMap[gameIdStr]; found {

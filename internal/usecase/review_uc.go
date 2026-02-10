@@ -20,7 +20,7 @@ func NewReviewUsecase(reviewRepo domain.ReviewRepo, userRepo domain.UserRepo) *R
 	}
 }
 func (uc *ReviewUsecase) Create(ctx context.Context, review *domain.Review) error {
-	user, err := uc.userRepo.GetById(ctx, review.UserId.Hex())
+	user, err := uc.userRepo.GetById(ctx, review.UserId)
 	if err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func (uc *ReviewUsecase) Update(ctx context.Context, id string, currentUserID st
 	if err != nil {
 		return err
 	}
-	if review.UserId.Hex() != currentUserID {
+	if review.UserId != currentUserID {
 		return errors.New("permission denied: you can only edit your own reviews")
 	}
 	if updatedReview.Rating != nil {
@@ -71,7 +71,7 @@ func (uc *ReviewUsecase) Delete(ctx context.Context, id string, userId string, u
 	if err != nil {
 		return err
 	}
-	if userRole != "admin" && review.UserId.Hex() != userId {
+	if userRole != "admin" && review.UserId != userId {
 		return errors.New("permission denied: you can only delete your own reviews")
 	}
 

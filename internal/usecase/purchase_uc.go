@@ -24,7 +24,7 @@ func (uc *PurchaseUsecase) Create(ctx context.Context, purchase *domain.Purchase
 	if err != nil {
 		return err
 	}
-	user, err := uc.userRepo.GetById(ctx, purchase.UserId.Hex())
+	user, err := uc.userRepo.GetById(ctx, purchase.UserId)
 	if err != nil {
 		return err
 	}
@@ -46,7 +46,7 @@ func (uc *PurchaseUsecase) Create(ctx context.Context, purchase *domain.Purchase
 			})
 		}
 	}
-	return uc.userRepo.Update(ctx, user.ID.Hex(), user)
+	return uc.userRepo.Update(ctx, user.ID, user)
 }
 func (uc *PurchaseUsecase) GetAll(ctx context.Context) ([]*domain.Purchase, error) {
 	return uc.purchaseRepo.GetAll(ctx)
