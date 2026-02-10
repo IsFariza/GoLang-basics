@@ -97,7 +97,6 @@ func (uc *GameUseCase) GetById(ctx context.Context, id string) (*domain.Populate
 		return err
 	})
 
-	// Ignore err because emulation is optional
 	g.Go(func() error {
 		emulation, _ = uc.emulationRepo.GetById(ctx, game.EmulationId)
 		return nil
@@ -245,7 +244,6 @@ func (uc *GameUseCase) GetUserLibraryWithDetails(ctx context.Context, userId str
 		return nil, err
 	}
 
-	// Create a map for quick game lookup by ID
 	gameMap := make(map[string]domain.Game)
 	for _, g := range games {
 		gameMap[g.ID] = g
