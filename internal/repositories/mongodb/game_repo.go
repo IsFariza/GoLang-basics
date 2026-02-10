@@ -5,6 +5,7 @@ import (
 
 	"github.com/BlackHole55/software-store-final/internal/delivery/dto"
 	"github.com/BlackHole55/software-store-final/internal/domain"
+	"github.com/BlackHole55/software-store-final/internal/repositories/mongodb/dao"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
@@ -20,19 +21,21 @@ func NewGameRepository(client *mongo.Client) *GameRepository {
 }
 
 func (r *GameRepository) Create(ctx context.Context, game *domain.Game, id string) error {
-	objID, err := bson.ObjectIDFromHex(id)
+	game.UserId = id
+	doc := dao.FromGameDomain(game)
+
+	res, err := r.collection.InsertOne(ctx, doc)
 	if err != nil {
 		return err
 	}
-	game.UserId = objID
-
-	_, err = r.collection.InsertOne(ctx, game)
-
-	return err
+	if oid, ok := res.InsertedID.(bson.ObjectID); ok {
+		game.ID = oid.Hex()
+	}
+	return nil
 }
 
 func (r *GameRepository) GetAll(ctx context.Context) ([]*domain.Game, error) {
-	var games []*domain.Game
+	var docs []*dao.GameDoc
 
 	cursor, err := r.collection.Find(ctx, bson.D{})
 	if err != nil {
@@ -40,12 +43,19 @@ func (r *GameRepository) GetAll(ctx context.Context) ([]*domain.Game, error) {
 	}
 	defer cursor.Close(ctx)
 
-	err = cursor.All(ctx, &games)
+	err = cursor.All(ctx, &docs)
+	if err != nil {
+		return nil, err
+	}
+	games := make([]*domain.Game, len(docs))
+	for i, d := range docs {
+		games[i] = d.ToDomain()
+	}
 	return games, err
 }
 
 func (r *GameRepository) GetAllVerified(ctx context.Context) ([]*domain.Game, error) {
-	var games []*domain.Game
+	var docs []*dao.GameDoc
 
 	filter := bson.M{"is_verified": true}
 	cursor, err := r.collection.Find(ctx, filter)
@@ -54,28 +64,33 @@ func (r *GameRepository) GetAllVerified(ctx context.Context) ([]*domain.Game, er
 	}
 	defer cursor.Close(ctx)
 
-	err = cursor.All(ctx, &games)
+	err = cursor.All(ctx, &docs)
+	if err != nil {
+		return nil, err
+	}
+	games := make([]*domain.Game, len(docs))
+	for i, d := range docs {
+		games[i] = d.ToDomain()
+	}
 	return games, err
 
 }
 
 func (r *GameRepository) GetById(ctx context.Context, id string) (*domain.Game, error) {
-	var game domain.Game
-
 	objID, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
 	}
-
+	var doc dao.GameDoc
 	filter := bson.M{"_id": objID}
 
-	err = r.collection.FindOne(ctx, filter).Decode(&game)
+	err = r.collection.FindOne(ctx, filter).Decode(&doc)
 
 	if err != nil {
 		return nil, domain.ErrorNotFound
 	}
 
-	return &game, err
+	return doc.ToDomain(), err
 }
 
 func (r *GameRepository) GetByIds(ctx context.Context, ids []string) ([]domain.Game, error) {
@@ -94,21 +109,24 @@ func (r *GameRepository) GetByIds(ctx context.Context, ids []string) ([]domain.G
 	}
 	defer cursor.Close(ctx)
 
-	var games []domain.Game
-	if err := cursor.All(ctx, &games); err != nil {
+	var docs []dao.GameDoc
+	if err := cursor.All(ctx, &docs); err != nil {
 		return nil, err
 	}
-
+	games := make([]domain.Game, len(docs))
+	for i, d := range docs {
+		games[i] = *d.ToDomain()
+	}
 	return games, nil
 }
 
 func (r *GameRepository) GetByUserId(ctx context.Context, userId string) ([]*domain.Game, error) {
-	var games []*domain.Game
-
 	objID, err := bson.ObjectIDFromHex(userId)
 	if err != nil {
 		return nil, err
 	}
+
+	var docs []*dao.GameDoc
 
 	filter := bson.M{"user_id": objID}
 	cursor, err := r.collection.Find(ctx, filter)
@@ -117,7 +135,14 @@ func (r *GameRepository) GetByUserId(ctx context.Context, userId string) ([]*dom
 	}
 	defer cursor.Close(ctx)
 
-	err = cursor.All(ctx, &games)
+	err = cursor.All(ctx, &docs)
+	if err != nil {
+		return nil, err
+	}
+	games := make([]*domain.Game, len(docs))
+	for i, d := range docs {
+		games[i] = d.ToDomain()
+	}
 	return games, err
 }
 
@@ -127,28 +152,33 @@ func (r *GameRepository) Update(ctx context.Context, id string, updatedGame *dom
 		return err
 	}
 
+	doc := dao.FromGameDomain(updatedGame)
+
 	filter := bson.M{"_id": objID}
 	update := bson.M{
 		"$set": bson.M{
-			"title":           updatedGame.Title,
-			"description":     updatedGame.Description,
-			"price":           updatedGame.Price,
-			"original_system": updatedGame.OriginalSystem,
-			"publisher_id":    updatedGame.PublisherId,
-			"developer_id":    updatedGame.DeveloperId,
-			"emulation_id":    updatedGame.EmulationId,
-			"category":        updatedGame.Category,
-			"is_verified":     updatedGame.IsVerified,
-			"updated_at":      updatedGame.UpdatedAt,
+			"title":           doc.Title,
+			"description":     doc.Description,
+			"price":           doc.Price,
+			"original_system": doc.OriginalSystem,
+			"publisher_id":    doc.PublisherId,
+			"developer_id":    doc.DeveloperId,
+			"emulation_id":    doc.EmulationId,
+			"category":        doc.Category,
+			"is_verified":     doc.IsVerified,
+			"updated_at":      doc.UpdatedAt,
 		},
 	}
 
 	res, err := r.collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
 	if res.MatchedCount == 0 {
 		return domain.ErrorNotFound
 	}
 
-	return err
+	return nil
 }
 
 func (r *GameRepository) Delete(ctx context.Context, id string) error {
@@ -208,7 +238,7 @@ func (r *GameRepository) Unverify(ctx context.Context, id string) error {
 }
 
 func (r *GameRepository) SearchByTitle(ctx context.Context, title string) ([]*domain.Game, error) {
-	var games []*domain.Game
+	var docs []*dao.GameDoc
 
 	filter := bson.M{"is_verified": true, "title": bson.M{"$regex": title, "$options": "i"}}
 	cursor, err := r.collection.Find(ctx, filter)
@@ -217,10 +247,14 @@ func (r *GameRepository) SearchByTitle(ctx context.Context, title string) ([]*do
 	}
 	defer cursor.Close(ctx)
 
-	if err := cursor.All(ctx, &games); err != nil {
+	if err := cursor.All(ctx, &docs); err != nil {
 		return nil, err
 	}
 
+	games := make([]*domain.Game, len(docs))
+	for i, d := range docs {
+		games[i] = d.ToDomain()
+	}
 	return games, nil
 }
 
