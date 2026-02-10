@@ -67,7 +67,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 
 	session := sessions.Default(c)
 
-	session.Set("userID", user.ID.Hex())
+	session.Set("userID", user.ID)
 	session.Set("role", user.Role)
 
 	if err := session.Save(); err != nil {
