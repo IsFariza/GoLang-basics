@@ -71,7 +71,7 @@ func (uc *ReviewUsecase) Delete(ctx context.Context, id string, userId string, u
 	if err != nil {
 		return err
 	}
-	if userRole != "admin" && review.UserId != userId {
+	if userRole != "admin" && userRole != "moderator" && review.UserId != userId {
 		return errors.New("permission denied: you can only delete your own reviews")
 	}
 
